@@ -24,3 +24,17 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+.href{
+    color: black !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+    text-align: justify !important;
+}
+
+.obligatorio{
+    margin-left: 5px;
+    color: red !important;
+    text-decoration: none;
+    font-weight: bold;
+}
