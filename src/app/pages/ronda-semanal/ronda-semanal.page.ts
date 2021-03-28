@@ -19,11 +19,13 @@ export class RondaSemanalPage implements OnInit {
   productoLista: any[] =[];
   mercadoLista: any[]=[];
   entregaLista: any[]=[];
+  rondaLista: any[]=[];
   idDocumentosUser: any;
   decision: any;
   numeroSemana: any;
   finSemana: any;
   fecha = new Date().toLocaleString();
+  year = new Date().getFullYear();
   codigo: any;
   controlCantidad: boolean = false;
   controlPeso: boolean = false;
@@ -31,8 +33,10 @@ export class RondaSemanalPage implements OnInit {
   id: any;
   formRonda: any = FormGroup;
   opcionesEnviar =["Si", "No"];
+  participo= false;
 
   get producto(){
+    
     return this.formRonda.get('producto');
   }
   get cantidad(){
@@ -88,14 +92,14 @@ export class RondaSemanalPage implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private alertCtrl: AlertController
-  ) {
-    this.crearFormulario();
+  ) {    
+    this.crearFormulario();    
   }
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
-    //console.log(this.id);
-    this.cargarDatos();    
+    this.cargarDatos(); 
+       
   } 
 
   cargarDatos(){
@@ -107,17 +111,31 @@ export class RondaSemanalPage implements OnInit {
       this.mercadoLista = this.auth.listaMercados;
       //console.log(this.mercadoLista);      
     })
-    this.auth.getEntrega().then(resp=>{
-      this.entregaLista = this.auth.listaEntrega;
-      //console.log(this.entregaLista);      
+    
+    this.auth.getRondaHistorica().then(()=>{
+      this.rondaLista = this.auth.listaRondaHistorica;
+      console.log(this.rondaLista);      
     })
+    
     this.auth.getUser().then(resp=>{
       this.usuarioLista = this.auth.listaUser;
       let i = 0
-      for(let user of this.usuarioLista){    
-        if(this.id == user.IdUsuario){  
+      console.log(this.usuarioLista);
+      
+      for(let user of this.usuarioLista){  
+        console.log('uno');
+         
+        if(this.id == user.IdUsuario){ 
+          console.log('dos');
           this.usuario = {
             ...user
+          }
+          for(let ronda of this.rondaLista){
+            console.log('tres');
+            if(ronda.Usuario == this.usuario.CodigoMostrar && ronda.Year == this.year){
+              this.participo = true;
+              
+            }
           }
           this.idDocumentosUser = this.auth.listaIdUser[i];
           console.log('prueba',this.usuario);
@@ -127,10 +145,26 @@ export class RondaSemanalPage implements OnInit {
         i++;
       }       
     })
+    this.auth.getEntrega().then(resp=>{
+      this.entregaLista = this.auth.listaEntrega;
+      console.log(this.entregaLista);
+      this.userParticipo();      
+    })
+    
     this.numeroSemana = this.auth.numeroSemana; 
     this.finSemana = this.auth.finSemana;    
     this.codigo = localStorage.getItem('codigo');
     this.ronda.Usuario = this.codigo;   
+  }
+
+  userParticipo(){
+    if(this.participo){
+      console.log('mundo',this.participo);
+      this.auth.salidaForzada();
+    }else{
+      console.log('hola', this.participo);
+      
+    }
   }
 
   crearFormulario(){
@@ -193,7 +227,7 @@ export class RondaSemanalPage implements OnInit {
   continuarRegistro(){
     this.auth.setRonda(this.ronda).then(resp=>{
       this.auth.presentAlert('Buen trabajo', 'Registro creado exitosamente!!!');      
-      this.usuarioParticipa();         
+      //this.usuarioParticipa();         
       if(this.formRonda.controls.envia.value == 'Si'){
         console.log("Continua...");
         this.formRonda.reset({
@@ -241,12 +275,12 @@ export class RondaSemanalPage implements OnInit {
     await alert.present();
   }
 
-  usuarioParticipa(){
+ /*  usuarioParticipa(){
     this.auth.setUserParicipa(this.usuario,this.idDocumentosUser).then(resp=>{
       console.log('cambio en participacion');  
       console.log('usuario', this.usuario);
       console.log('id', this.idDocumentosUser);    
     })
-  }
+  } */
 
 }

@@ -28,16 +28,15 @@ export class AuthService {
   listaMercados : any = [];
   listaProducto : any = [];
   listaEntrega : any = [];
-  listaRonda: any = [];
   estadoRonda: any = [];
   usuarioParticipa: any =[];
+  listaRondaHistorica: any=[];
   total= 0;
   participantes = 0;
   numeroSemana: any; 
   finSemana: any;
   years:any= [];
   listaSemanas: any =[];
-
   listaOtra: any = [];
   uid: any;
 
@@ -158,9 +157,7 @@ export class AuthService {
       this.presentAlert('Atencion', 'Revise la bandeja de entrada de su correo electrónico para continuar')
       this.router.navigateByUrl('/login');
     })
-  }
-
- 
+  } 
   
   async signOut(){
     const loading = await this.loadingController.create({
@@ -176,7 +173,7 @@ export class AuthService {
     })
   }
 
-  async setUserParicipa(user: UserInterface,id: string){    
+  /* async setUserParicipa(user: UserInterface,id: string){    
     const participa={
       Nombre : user.Nombre,
       Apellido : user.Apellido,
@@ -186,13 +183,13 @@ export class AuthService {
       Localizacion : user.Localizacion,
       CodigoMostrar : user.CodigoMostrar,
       Estado: user.Estado,
-      IdCodigo: user.IdUsuario,
+      IdUsuario: user.IdUsuario,
       Participa : true,
     }   
     return await this.afs.collection('Usuarios').doc(id).set(participa).then(resp=>{
       console.log('ok');      
      })
-  }
+  } */
 
   async setRonda(ronda: RondaInterface){
     return await this.afs.collection('RondaHistorica').doc().set({
@@ -232,6 +229,17 @@ export class AuthService {
     })   
   }
 
+  getRondaHistorica(){        
+    return this.afs.collection('RondaHistorica').get().forEach((element) => {
+      (element.docs).forEach((i:any)=>{
+        if(i.data().Semana == this.numeroSemana){
+          this.listaRondaHistorica.push(i.data());
+        }        
+        return this.listaRondaHistorica;
+      })       
+    })        
+  }
+
   getLocalizacion(){        
     return this.afs.collection('Mercados').get().forEach((element) => {
       (element.docs).forEach((i:any)=>{
@@ -259,11 +267,19 @@ export class AuthService {
     })           
   }
 
+  async salidaForzada(){
+    return await this.afauth.signOut().then(()=>{    
+      localStorage.clear();
+      this.presentAlert('Señor porcicultor', 'Usted ya participo durante la ronda de la semana en curso, solo se permite una participación por semana, gracias.') 
+      this.router.navigateByUrl('/inicio');
+    })
+  }
+
   logOut(){
     return this.afauth.signOut().then(()=>{    
       localStorage.clear();
       this.presentAlert('Atencion', 'Gracias por participar') 
-      this.router.navigateByUrl('/acceso');
+      this.router.navigateByUrl('/inicio');
     })
   }
 
