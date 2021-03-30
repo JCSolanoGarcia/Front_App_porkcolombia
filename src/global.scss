@@ -38,3 +38,25 @@
     text-decoration: none;
     font-weight: bold;
 }
+
+.fieldcontent {
+    display: block;
+    width: 100%;
+    margin: 15px 5px;
+    padding-bottom: 50px;
+    /* padding-left: 0.75em;
+    padding-right: 0.75em; */
+    border-radius: 15px;
+    border: solid 0.005rem rgb(167,167,167);
+}
+
+.fieldcontentTitle{
+    color: black;
+    padding: 10px 5px;
+    width: auto;
+    margin-left: 10px;
+    font-family: 'Segoe UI';
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: bold;
+}

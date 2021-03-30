@@ -31,8 +31,6 @@ export class AuthService {
   estadoRonda: any = [];
   usuarioParticipa: any =[];
   listaRondaHistorica: any=[];
-  total= 0;
-  participantes = 0;
   numeroSemana: any; 
   finSemana: any;
   years:any= [];
@@ -58,10 +56,7 @@ export class AuthService {
         }
       })
     )
-
-    this.estaAutenticado();
-    //this.getProducto();
-    //this.getEntrega();    
+    this.estaAutenticado(); 
     this.generarFechas();
    }
 
@@ -106,7 +101,7 @@ export class AuthService {
           loading.dismiss();
           this.presentAlert('Bienvenido', abc)
           if( data.user?.uid == 'GMKCSg38KnOgzcbW2aB52Tzb3bp1'){
-            this.router.navigateByUrl('/alert');   
+            this.router.navigateByUrl('/admin');   
           }else{
             this.router.navigateByUrl(`/ronda-semanal/${data.user?.uid}`);
           }                       
@@ -142,8 +137,7 @@ export class AuthService {
       Localizacion : datos.Localizacion,
       CodigoMostrar : datos.CodigoMostrar,
       Estado: datos.Estado,
-      IdUsuario: uid,
-      Participa : false,
+      IdUsuario: uid
     }    
     return await this.afs.collection('Usuarios').doc().set(userTemp1).then(resp=>{
       
@@ -173,24 +167,6 @@ export class AuthService {
     })
   }
 
-  /* async setUserParicipa(user: UserInterface,id: string){    
-    const participa={
-      Nombre : user.Nombre,
-      Apellido : user.Apellido,
-      Celular: user.Celular,
-      Granja: user.Granja,
-      Email: user.Email,
-      Localizacion : user.Localizacion,
-      CodigoMostrar : user.CodigoMostrar,
-      Estado: user.Estado,
-      IdUsuario: user.IdUsuario,
-      Participa : true,
-    }   
-    return await this.afs.collection('Usuarios').doc(id).set(participa).then(resp=>{
-      console.log('ok');      
-     })
-  } */
-
   async setRonda(ronda: RondaInterface){
     return await this.afs.collection('RondaHistorica').doc().set({
             Producto : ronda.Producto,
@@ -210,31 +186,40 @@ export class AuthService {
     })
   }
 
+  setEstadoRonda(estado:string){
+    this.afs.collection('Estado').doc('1').set({Estado:estado, id:'1'});
+  }
+
   getUser(){        
     return this.afs.collection('Usuarios').get().forEach((element) => {
       this.listaUser.length=0;
       this.listaOtra=(element.docs);
       (element.docs).forEach((i:any)=>{        
         this.listaUser.push(i.data());
-        this.listaIdUser.push(i.id)
-        if(!i.data().Participa && i.data().Estado == 'Activo'){
-          this.usuarioParticipa.push(i.data());
-          this.total ++;
-        }
-        if(i.data().Participa && i.data().Estado == 'Activo'){
-          this.participantes ++;
-        }                                    
+        this.listaIdUser.push(i.id);                             
         return this.listaUser;
       })       
     })   
   }
 
-  getRondaHistorica(){        
-    return this.afs.collection('RondaHistorica').get().forEach((element) => {
-      (element.docs).forEach((i:any)=>{
-        if(i.data().Semana == this.numeroSemana){
-          this.listaRondaHistorica.push(i.data());
-        }        
+  async getRondaHistorica(){
+    /* const loading = await this.loadingController.create({
+      message: `Autenticando....`,
+      spinner: `crescent`,
+      showBackdrop: true,
+    }); */
+    let anio:any=[];
+    let sem: any=[];       
+    return await this.afs.collection('RondaHistorica').get().forEach((element) => {
+      this.listaRondaHistorica.lenght = 0;
+      (element.docs).forEach((i:any)=>{        
+        this.listaRondaHistorica.push(i.data()); 
+        anio.push(i.data().Year);
+        sem.push(i.data().Semana);
+        this.years = Array.from(new Set(anio));
+        this.years.sort((a: any,b: any) =>a-b);
+        this.listaSemanas = Array.from(new Set(sem));
+        this.listaSemanas.sort((a: any,b: any) =>a-b);               
         return this.listaRondaHistorica;
       })       
     })        
@@ -267,10 +252,18 @@ export class AuthService {
     })           
   }
 
+  getEstadoRonda(){
+    return this.afs.collection('Estado').get().forEach((element) => {
+      (element.docs).forEach((i:any)=>{      
+        this.estadoRonda=i.data().Estado;        
+        return this.estadoRonda;
+      })       
+    })  
+  }
+
   async salidaForzada(){
     return await this.afauth.signOut().then(()=>{    
-      localStorage.clear();
-      this.presentAlert('Señor porcicultor', 'Usted ya participo durante la ronda de la semana en curso, solo se permite una participación por semana, gracias.') 
+      localStorage.clear(); 
       this.router.navigateByUrl('/inicio');
     })
   }

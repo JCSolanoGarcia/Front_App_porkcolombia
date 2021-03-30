@@ -13,11 +13,7 @@ interface Componente{
 })
 export class InicioPage implements OnInit {
   componentes: Componente[]=[
-    /* {
-      icon: 'arrow-back',
-      name: 'Atras',
-      redirectTo: '/'
-    }, */
+    
     {
       icon: 'person-add-outline',
       name: 'Registrarme',
@@ -25,10 +21,9 @@ export class InicioPage implements OnInit {
     },
     {
       icon: 'log-in-outline',
-      name: 'Login',
+      name: 'Ingresar',
       redirectTo: '/login'
     }
-
   ]
 
   constructor() { }

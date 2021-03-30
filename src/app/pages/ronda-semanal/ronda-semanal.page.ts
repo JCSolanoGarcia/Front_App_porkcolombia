@@ -98,9 +98,22 @@ export class RondaSemanalPage implements OnInit {
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
-    this.cargarDatos(); 
-       
+    this.consultaEstado();
+    //this.cargarDatos();       
   } 
+
+  consultaEstado(){
+    this.auth.getEstadoRonda().then(()=>{
+      console.log(this.auth.estadoRonda);
+      if(this.auth.estadoRonda == 'Inactivo'){
+        this.auth.presentAlert('Señor porcicultor', 'En este momento no esta permitido ingresar registros a la ronda, gracias.')
+        this.auth.salidaForzada();
+      }else{
+        this.cargarDatos();
+      }
+       
+    })
+  }
 
   cargarDatos(){
     this.auth.getProducto().then(resp=>{
@@ -110,36 +123,31 @@ export class RondaSemanalPage implements OnInit {
     this.auth.getLocalizacion().then(resp=>{
       this.mercadoLista = this.auth.listaMercados;
       //console.log(this.mercadoLista);      
-    })
-    
+    })    
     this.auth.getRondaHistorica().then(()=>{
       this.rondaLista = this.auth.listaRondaHistorica;
-      console.log(this.rondaLista);      
-    })
-    
+      //console.log(this.rondaLista);      
+    })    
     this.auth.getUser().then(resp=>{
       this.usuarioLista = this.auth.listaUser;
       let i = 0
-      console.log(this.usuarioLista);
-      
+      //console.log(this.usuarioLista);      
       for(let user of this.usuarioLista){  
-        console.log('uno');
-         
+        //console.log('uno');         
         if(this.id == user.IdUsuario){ 
-          console.log('dos');
+          //console.log('dos');
           this.usuario = {
             ...user
           }
           for(let ronda of this.rondaLista){
-            console.log('tres');
+            //console.log('tres');
             if(ronda.Usuario == this.usuario.CodigoMostrar && ronda.Year == this.year){
-              this.participo = true;
-              
+              this.participo = true;              
             }
           }
           this.idDocumentosUser = this.auth.listaIdUser[i];
-          console.log('prueba',this.usuario);
-          console.log('prueba',this.idDocumentosUser);
+          //console.log('prueba',this.usuario);
+          //console.log('prueba',this.idDocumentosUser);
           localStorage.setItem('codigo', user.CodigoMostrar);
         }
         i++;
@@ -147,10 +155,9 @@ export class RondaSemanalPage implements OnInit {
     })
     this.auth.getEntrega().then(resp=>{
       this.entregaLista = this.auth.listaEntrega;
-      console.log(this.entregaLista);
+      //console.log(this.entregaLista);
       this.userParticipo();      
-    })
-    
+    })    
     this.numeroSemana = this.auth.numeroSemana; 
     this.finSemana = this.auth.finSemana;    
     this.codigo = localStorage.getItem('codigo');
@@ -159,11 +166,8 @@ export class RondaSemanalPage implements OnInit {
 
   userParticipo(){
     if(this.participo){
-      console.log('mundo',this.participo);
+      this.auth.presentAlert('Señor porcicultor', 'Usted ya participo durante la ronda de la semana en curso, solo se permite una participación por semana, gracias.')
       this.auth.salidaForzada();
-    }else{
-      console.log('hola', this.participo);
-      
     }
   }
 
@@ -260,13 +264,13 @@ export class RondaSemanalPage implements OnInit {
           role: 'cancel',
           cssClass: 'secondary',
           handler: (blah) => {
-            console.log('Confirm Cancel: blah');
+            //console.log('Confirm Cancel: blah');
             return;
           }
         }, {
           text: 'Ok',
           handler: () => {
-            console.log('Confirm Okay');
+            //console.log('Confirm Okay');
             this.continuarRegistro()
           }
         }
@@ -274,13 +278,4 @@ export class RondaSemanalPage implements OnInit {
     });
     await alert.present();
   }
-
- /*  usuarioParticipa(){
-    this.auth.setUserParicipa(this.usuario,this.idDocumentosUser).then(resp=>{
-      console.log('cambio en participacion');  
-      console.log('usuario', this.usuario);
-      console.log('id', this.idDocumentosUser);    
-    })
-  } */
-
 }

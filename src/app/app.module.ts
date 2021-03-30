@@ -23,6 +23,8 @@ import { AuthService } from './services/auth.service';
 //Auth guard
 import { AuthGuard } from './guards/auth.guard'
 
+import { ChartsModule } from 'ng2-charts';
+
 
 
 @NgModule({
@@ -38,6 +40,7 @@ import { AuthGuard } from './guards/auth.guard'
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireStorageModule,
+    ChartsModule
   ],
   providers: [
     AuthService,

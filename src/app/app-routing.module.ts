@@ -38,6 +38,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/ronda-semanal/ronda-semanal.module').then( m => m.RondaSemanalPageModule),
     canActivate: [AuthGuard]
   },
+  {
+    path: 'admin',
+    loadChildren: () => import('./pages/admin/admin.module').then( m => m.AdminPageModule)
+  }
 ];
 
 @NgModule({
