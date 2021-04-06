@@ -203,11 +203,6 @@ export class AuthService {
   }
 
   async getRondaHistorica(){
-    /* const loading = await this.loadingController.create({
-      message: `Autenticando....`,
-      spinner: `crescent`,
-      showBackdrop: true,
-    }); */
     let anio:any=[];
     let sem: any=[];       
     return await this.afs.collection('RondaHistorica').get().forEach((element) => {

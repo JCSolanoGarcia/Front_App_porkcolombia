@@ -116,6 +116,7 @@ export class RondaSemanalPage implements OnInit {
   }
 
   cargarDatos(){
+    this.numeroSemana = this.auth.numeroSemana;
     this.auth.getProducto().then(resp=>{
       this.productoLista = this.auth.listaProducto;
       //console.log(this.productoLista);      
@@ -141,7 +142,7 @@ export class RondaSemanalPage implements OnInit {
           }
           for(let ronda of this.rondaLista){
             //console.log('tres');
-            if(ronda.Usuario == this.usuario.CodigoMostrar && ronda.Year == this.year){
+            if(ronda.Usuario == this.usuario.CodigoMostrar && ronda.Year == this.year && ronda.Semana == this.numeroSemana){
               this.participo = true;              
             }
           }
@@ -158,7 +159,7 @@ export class RondaSemanalPage implements OnInit {
       //console.log(this.entregaLista);
       this.userParticipo();      
     })    
-    this.numeroSemana = this.auth.numeroSemana; 
+     
     this.finSemana = this.auth.finSemana;    
     this.codigo = localStorage.getItem('codigo');
     this.ronda.Usuario = this.codigo;   

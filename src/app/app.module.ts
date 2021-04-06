@@ -24,7 +24,9 @@ import { AuthService } from './services/auth.service';
 import { AuthGuard } from './guards/auth.guard'
 
 import { ChartsModule } from 'ng2-charts';
-
+import { OneSignal } from '@ionic-native/onesignal/ngx';
+import { IonicStorageModule } from '@ionic/storage-angular';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -40,11 +42,14 @@ import { ChartsModule } from 'ng2-charts';
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireStorageModule,
-    ChartsModule
+    ChartsModule,
+    IonicStorageModule.forRoot(),
+    HttpClientModule
   ],
   providers: [
     AuthService,
     AuthGuard,
+    OneSignal,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent],

@@ -1,6 +1,6 @@
 {
-  "appId": "io.ionic.starter",
-  "appName": "componentes",
+  "appId": "app.web.rondasemanal.ionic",
+  "appName": "Ronda Semanal",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

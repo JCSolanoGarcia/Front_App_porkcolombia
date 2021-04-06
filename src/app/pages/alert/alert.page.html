@@ -1,14 +1,29 @@
 <app-header titulo = "alerta"></app-header>
 
-<ion-content>
+<ion-content>    
+  <ion-list>
+    <ion-list-header>
+      <ion-label><h2>Mensajes recibidos</h2> </ion-label>
+    </ion-list-header>
     <ion-item>
-        <ion-label>Seleccione un Producto</ion-label>
-        <ion-select interface="popover" class="custom-options">
-          <ion-select-option value="brown">Brown</ion-select-option>
-          <ion-select-option value="blonde">Blonde</ion-select-option>
-          <ion-select-option value="black">Black</ion-select-option>
-          <ion-select-option value="red">Red</ion-select-option>
-        </ion-select>
-      </ion-item>
-
+      <ion-button  shape="round" type="button" color="primary" size="small" [routerLink]="['/inicio']">
+        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+        Atras                                
+      </ion-button>
+      <ion-button  shape="round" type="button" color="danger" size="small" (click)="presentAlertConfirm()">
+        <ion-icon slot="icon-only" name="trash"></ion-icon>
+        Borrar                                
+    </ion-button>
+    </ion-item>    
+    <ion-item *ngFor="let push of mensajes">
+      <ion-label>
+        <h3>{{push.title}}</h3>        
+        <!-- <a href="{{push.launchURL}}">{{push.launchURL}}</a> -->
+        <p>{{push.body}}</p>
+        <p *ngFor="let ab of push.actionButtons"><a href="{{ab.icon}}">{{ab.icon}}</a></p>
+        <!-- <img src="{{push.bigPicture}}" alt="Sin imagen" > -->
+        <!-- <p>{{push.additionalData | json}}</p> -->
+      </ion-label>
+    </ion-item>     
+  </ion-list>
 </ion-content>
