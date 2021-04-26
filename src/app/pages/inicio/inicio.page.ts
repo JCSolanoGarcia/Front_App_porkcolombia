@@ -1,5 +1,4 @@
-import { ApplicationRef, Component, OnInit } from '@angular/core';
-import { OSNotificationPayload } from '@ionic-native/onesignal/ngx';
+import { Component, OnInit } from '@angular/core';
 import { PushService } from 'src/app/services/push.service';
 
 interface Componente{
@@ -28,7 +27,7 @@ export class InicioPage implements OnInit {
     },
     {
       icon: 'help-circle-outline',
-      name: 'Ayuda',
+      name: 'Instrucciones',
       redirectTo: '/ayuda'
     },
     {

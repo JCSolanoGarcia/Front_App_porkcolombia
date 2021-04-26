@@ -6,6 +6,9 @@ import { RondaInterface } from 'src/app/interfaces/ronda-interface';
 import { UserInterface } from 'src/app/interfaces/user-interface';
 import { AuthService } from 'src/app/services/auth.service';
 
+import { Storage } from '@ionic/storage';
+import { PushService } from 'src/app/services/push.service';
+
 @Component({
   selector: 'app-ronda-semanal',
   templateUrl: './ronda-semanal.page.html',
@@ -35,8 +38,7 @@ export class RondaSemanalPage implements OnInit {
   opcionesEnviar =["Si", "No"];
   participo= false;
 
-  get producto(){
-    
+  get producto(){    
     return this.formRonda.get('producto');
   }
   get cantidad(){
@@ -86,88 +88,88 @@ export class RondaSemanalPage implements OnInit {
     ]    
   }
 
+  private _storage: Storage | null = null;
   constructor(
     private auth: AuthService,
+    private pushNoti: PushService,
     private router: Router,
     private route: ActivatedRoute,
     private fb: FormBuilder,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private storage: Storage
   ) {    
-    this.crearFormulario();    
+    this.crearFormulario();
+    this.init();    
   }
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
-    this.consultaEstado();
-    //this.cargarDatos();       
+    this.consultaEstado();       
   } 
+
+  async init() {
+    const storage = await this.storage.create();
+    this._storage = storage;
+  }
+
+  public set(key: string, value: any) {
+    this._storage?.set(key, value);
+  }
 
   consultaEstado(){
     this.auth.getEstadoRonda().then(()=>{
-      console.log(this.auth.estadoRonda);
       if(this.auth.estadoRonda == 'Inactivo'){
         this.auth.presentAlert('Señor porcicultor', 'En este momento no esta permitido ingresar registros a la ronda, gracias.')
         this.auth.salidaForzada();
       }else{
         this.cargarDatos();
-      }
-       
+      }       
     })
   }
 
-  cargarDatos(){
+  async cargarDatos(){
     this.numeroSemana = this.auth.numeroSemana;
     this.auth.getProducto().then(resp=>{
-      this.productoLista = this.auth.listaProducto;
-      //console.log(this.productoLista);      
+      this.productoLista = this.auth.listaProducto;     
     })
     this.auth.getLocalizacion().then(resp=>{
-      this.mercadoLista = this.auth.listaMercados;
-      //console.log(this.mercadoLista);      
+      this.mercadoLista = this.auth.listaMercados;     
     })    
     this.auth.getRondaHistorica().then(()=>{
-      this.rondaLista = this.auth.listaRondaHistorica;
-      //console.log(this.rondaLista);      
+      this.rondaLista = this.auth.listaRondaHistorica;      
     })    
     this.auth.getUser().then(resp=>{
       this.usuarioLista = this.auth.listaUser;
-      let i = 0
-      //console.log(this.usuarioLista);      
-      for(let user of this.usuarioLista){  
-        //console.log('uno');         
+      let i = 0     
+      for(let user of this.usuarioLista){         
         if(this.id == user.IdUsuario){ 
-          //console.log('dos');
           this.usuario = {
             ...user
           }
           for(let ronda of this.rondaLista){
-            //console.log('tres');
             if(ronda.Usuario == this.usuario.CodigoMostrar && ronda.Year == this.year && ronda.Semana == this.numeroSemana){
               this.participo = true;              
             }
           }
           this.idDocumentosUser = this.auth.listaIdUser[i];
-          //console.log('prueba',this.usuario);
-          //console.log('prueba',this.idDocumentosUser);
-          localStorage.setItem('codigo', user.CodigoMostrar);
+          this.storage.set('codigo', user.CodigoMostrar);
         }
         i++;
       }       
     })
-    this.auth.getEntrega().then(resp=>{
+    await this.auth.getEntrega().then(resp=>{
       this.entregaLista = this.auth.listaEntrega;
-      //console.log(this.entregaLista);
       this.userParticipo();      
-    })    
-     
+    })        
     this.finSemana = this.auth.finSemana;    
-    this.codigo = localStorage.getItem('codigo');
+    this.codigo = await this.storage.get('codigo') || [];
     this.ronda.Usuario = this.codigo;   
   }
 
   userParticipo(){
     if(this.participo){
       this.auth.presentAlert('Señor porcicultor', 'Usted ya participo durante la ronda de la semana en curso, solo se permite una participación por semana, gracias.')
+      this.pushNoti.deleteCodigo();
       this.auth.salidaForzada();
     }
   }
@@ -225,16 +227,13 @@ export class RondaSemanalPage implements OnInit {
     this.ronda.Mercado = this.formRonda.controls.mercado.value;
     this.ronda.Entrega = this.formRonda.controls.entrega.value;
     this.ronda.Comentario = this.formRonda.controls.comentario.value;
-    console.log(this.ronda);
     this.presentAlertConfirm();          
   }
 
-  continuarRegistro(){
-    this.auth.setRonda(this.ronda).then(resp=>{
-      this.auth.presentAlert('Buen trabajo', 'Registro creado exitosamente!!!');      
-      //this.usuarioParticipa();         
+  async continuarRegistro(){    
+    await this.auth.setRonda(this.ronda).then(resp=>{
+      this.auth.presentAlert('Buen trabajo', 'Registro creado exitosamente!!!');              
       if(this.formRonda.controls.envia.value == 'Si'){
-        console.log("Continua...");
         this.formRonda.reset({
           producto:'',
           mercado:'',
@@ -242,13 +241,13 @@ export class RondaSemanalPage implements OnInit {
           envia: '',
         });                      
       }else{
-        console.log("Saliendo...");
         this.formRonda.reset({
           producto:'',
           mercado:'',
           entrega:'',
           envia: '',
         });
+        this.pushNoti.deleteCodigo();
         this.auth.logOut();
       }                  
     }) 
@@ -265,13 +264,11 @@ export class RondaSemanalPage implements OnInit {
           role: 'cancel',
           cssClass: 'secondary',
           handler: (blah) => {
-            //console.log('Confirm Cancel: blah');
             return;
           }
         }, {
           text: 'Ok',
           handler: () => {
-            //console.log('Confirm Okay');
             this.continuarRegistro()
           }
         }

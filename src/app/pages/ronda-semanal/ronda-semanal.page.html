@@ -11,7 +11,7 @@
                     <form [formGroup]="formRonda" (ngSubmit)="guardar()">
                         <ion-list>
                             <ion-item>
-                                <ion-label position="stacked">Seleccione un producto <a class="obligatorio">*</a></ion-label>
+                                <ion-label position="stacked">Producto <a class="obligatorio">*</a></ion-label>
                                 <ion-select class="custom-options"                                            
                                             formControlName ="producto">
                                     <ion-select-option *ngFor="let producto of productoLista" value="{{producto.Nombre}}">{{producto.Nombre}}</ion-select-option>
@@ -56,7 +56,7 @@
                                 </ng-container>                    
                             </div>
                             <ion-item>
-                              <ion-label position="stacked">Seleccione un mercado <a class="obligatorio">*</a></ion-label>
+                              <ion-label position="stacked">Ubicación mercado <a class="obligatorio">*</a></ion-label>
                               <ion-select class="custom-options" 
                                           formControlName ="mercado">
                                   <ion-select-option *ngFor="let mercado of mercadoLista" value="{{mercado}}">{{mercado}}</ion-select-option>
@@ -80,7 +80,7 @@
                                 </ng-container>                    
                             </div>
                             <ion-item>
-                              <ion-label position="stacked">Comentarios </ion-label>
+                              <ion-label position="stacked">Comentarios</ion-label>
                               <ion-input type="text" 
                                           formControlName ="comentario">
                                       </ion-input>
@@ -98,7 +98,7 @@
                               </ng-container>                    
                             </div>                            
                             <ion-button expand="block" shape="round" type="submit">
-                                Guardar
+                                Enviar
                                 <ion-icon slot="end" name="create"></ion-icon>
                             </ion-button>  
                             <ion-button expand="block" shape="round" type="button" color="medium" [routerLink]="['/inicio']">

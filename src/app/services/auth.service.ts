@@ -72,12 +72,12 @@ export class AuthService {
       var day = today.getDay() - start;
       var date = today.getDate() - day;
       var StartDate = new Date(today.setDate(date));
-      var EndDate = new Date(today.setDate(date + 5));
+      var EndDate = new Date(today.setDate(date + 6));
       return [EndDate, (week-1)];
     }    
     let fechas = new Date().getWeek();
     this.numeroSemana = fechas[1];
-    this.finSemana = fechas[0].toLocaleString();
+    this.finSemana = fechas[0].toLocaleString('en-US');  
   }
 
    async signIn(email, password){
@@ -93,6 +93,7 @@ export class AuthService {
         let abc = data.user?.email;
         let idtoken:any = data.user?.refreshToken;
         if(!data.user.emailVerified){
+          loading.dismiss();
           this.presentAlert('Atención', 'Este correo electrónico aun no ha sido verificado! Revise la bandeja de entrada de su correo electrónico')
           this.afauth.signOut();
         }else{
@@ -108,10 +109,12 @@ export class AuthService {
         }
       })
       .catch(error=>{
+        loading.dismiss();
         this.presentAlert('Error', 'Correo o contraseña incorrectos')
       })
     })
     .catch(error=>{
+      loading.dismiss();
       this.presentAlert('Error', 'Algo anda mal, verifica los datos y vuelve a intentarlo')
     })
   }// fin sign In
@@ -204,7 +207,8 @@ export class AuthService {
 
   async getRondaHistorica(){
     let anio:any=[];
-    let sem: any=[];       
+    let sem: any=[];   
+    this.listaRondaHistorica =[];    
     return await this.afs.collection('RondaHistorica').get().forEach((element) => {
       this.listaRondaHistorica.lenght = 0;
       (element.docs).forEach((i:any)=>{        
@@ -220,7 +224,8 @@ export class AuthService {
     })        
   }
 
-  getLocalizacion(){        
+  getLocalizacion(){    
+    this.listaMercados= [];    
     return this.afs.collection('Mercados').get().forEach((element) => {
       (element.docs).forEach((i:any)=>{
         this.listaMercados.push(i.data().Nombre);
@@ -229,7 +234,8 @@ export class AuthService {
     })        
   }
 
-  getProducto(){        
+  getProducto(){  
+    this.listaProducto = [];      
     return this.afs.collection('Productos').get().forEach((element) => {
       (element.docs).forEach((i:any)=>{
         this.listaProducto.push(i.data());        
@@ -238,7 +244,8 @@ export class AuthService {
     })           
   }
 
-  getEntrega(){        
+  getEntrega(){  
+    this.listaEntrega = [];      
     return this.afs.collection('Entrega').get().forEach((element) => {
       (element.docs).forEach((i:any)=>{
         this.listaEntrega.push(i.data());        
@@ -248,6 +255,7 @@ export class AuthService {
   }
 
   getEstadoRonda(){
+    this.estadoRonda = [];
     return this.afs.collection('Estado').get().forEach((element) => {
       (element.docs).forEach((i:any)=>{      
         this.estadoRonda=i.data().Estado;        

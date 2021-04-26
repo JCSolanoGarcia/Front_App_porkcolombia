@@ -86,12 +86,11 @@ export class AdminPage implements OnInit {
     private alertCtrl: AlertController
   ) {}
 
-  ngOnInit(): void {
-
+  ngOnInit(): void {    
   }
 
   ngAfterViewInit() {
-    this.cargarLocalizacion();        
+    this.cargarLocalizacion();   
   }
 
   diferenciaDeArreglos(arr1: any[], arr2: any[]){
@@ -104,36 +103,34 @@ export class AdminPage implements OnInit {
     });
   }
 
-  consulta(){
+  async consulta(){
     this.usuarioLista.length = 0;
-    this.auth.getUser().then(resp=>{      
+    this.rondaSemanal = [];
+    await this.auth.getUser().then(resp=>{      
       this.usuarioLista = this.auth.listaUser;
     });
-    this.auth.getRondaHistorica().then(()=>{ 
-      this.rondaSemanal =  this.auth.listaRondaHistorica;  
+    await this.auth.getRondaHistorica().then(()=>{ 
+      this.rondaSemanal =  this.auth.listaRondaHistorica;
+      this.numeroSemana = this.auth.numeroSemana;//13;  
       for(let user of this.usuarioLista){
         this.idUsuariosLista.push(user.CodigoMostrar);
         this.totalUsuarios ++;        
         for(let ronda of this.rondaSemanal){        
           if(ronda.Semana == this.numeroSemana && ronda.Year == 2021){           
             if(user.CodigoMostrar == ronda.Usuario && user.Estado == "Activo"){
-              this.participa.push(user.CodigoMostrar);
+              this.participa.push(user.CodigoMostrar);              
             }
           }
         }
-      }
-      this.datos();
+      }      
     })
+    this.datos();
   }
 
   datos(){
     this.siParticipa = Array.from(new Set(this.participa));
-    this.participantes= this.siParticipa.length; 
-    if(this.siParticipa.length != 0){
-      this.noParticipa = this.diferenciaDeArreglos(this.siParticipa, this.idUsuariosLista);
-    }else{
-      this.noParticipa = this.diferenciaDeArreglos(this.idUsuariosLista, this.siParticipa);
-    }
+    this.participantes= this.siParticipa.length;
+    this.noParticipa = this.diferenciaDeArreglos(this.idUsuariosLista, this.siParticipa);
     for(let user of this.usuarioLista){
       for(let p of this.noParticipa){
         if(user.CodigoMostrar != 'Bog001' && p == user.CodigoMostrar){
@@ -143,23 +140,21 @@ export class AdminPage implements OnInit {
     }    
   }
 
-  cargarLocalizacion(){
-    this.auth.getLocalizacion().then(resp=>{
+  async cargarLocalizacion(){
+    await this.cargaEstado();
+    await this.consulta();
+    await this.auth.getLocalizacion().then(resp=>{
       this.listaMercados= this.auth.listaMercados;      
-      this.cargaEstado();
       this.usuarioLista.length =0;
-      this.consulta();
-      setTimeout(() => {
-        this.consultarRondaActual();
-      }, 1500);    
-      //this.consultarRondaActual();
-      this.numeroSemana = this.auth.numeroSemana;
-      this.cargaInicial();      
+      //this.consulta(); 
+      this.cargaInicial();
+      this.consultarRondaActual();      
     });
+    //this.consultarRondaActual();
   }
 
   consultarRondaActual(){
-    console.log(this.rondaSemanal);    
+   // console.log(this.rondaSemanal);    
     for(let registro of this.rondaSemanal){        
       if(registro.Semana == this.numeroSemana && registro.Year == this.year){
         if(registro.Producto == 'Cerdo en Pie' && registro.Mercado == 'Bogotá'){
@@ -454,18 +449,20 @@ export class AdminPage implements OnInit {
   cargaInicial(){
     this.auth.getRondaHistorica().then(resp=>{      
       this.listaYear= this.auth.years;
-      this.semanaLista = this.auth.listaSemanas;
-      console.log(this.listaYear);
-      console.log(this.semanaLista);      
+      this.semanaLista = this.auth.listaSemanas;     
     })        
   }
 
-  cargaExcel(){    
+  async cargaExcel(){   
+    this.rondaLista1 = [];
+    this.rondaSemanal =[];     
     if(!this.weekSel && !this.yearSel){
       this.auth.presentAlert('Atención', 'Recuerde seleccionar un año y una semana!!!');
-    }else{    
-      for(let registro of this.rondaSemanal){ 
-        console.log(registro);                     
+    }else{
+      await this.auth.getRondaHistorica().then(()=>{ 
+        this.rondaSemanal =  this.auth.listaRondaHistorica;
+      })    
+      for(let registro of this.rondaSemanal){                    
         if(registro.Semana == this.weekSel && registro.Year == this.yearSel){
           this.rondaLista1.push(registro);
         }

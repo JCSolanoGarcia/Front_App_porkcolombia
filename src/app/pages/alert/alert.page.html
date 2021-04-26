@@ -3,17 +3,17 @@
 <ion-content>    
   <ion-list>
     <ion-list-header>
-      <ion-label><h2>Mensajes recibidos</h2> </ion-label>
+      <ion-label><h2>   Notificaciones </h2> </ion-label>
     </ion-list-header>
     <ion-item>
-      <ion-button  shape="round" type="button" color="primary" size="small" [routerLink]="['/inicio']">
+      <ion-button slot="start"  shape="round" type="button" color="primary" size="small" [routerLink]="['/inicio']">
         <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
         Atras                                
-      </ion-button>
-      <ion-button  shape="round" type="button" color="danger" size="small" (click)="presentAlertConfirm()">
+      </ion-button>      
+      <ion-button slot="end"  shape="round" type="button" color="danger" size="small" (click)="presentAlertConfirm()">
         <ion-icon slot="icon-only" name="trash"></ion-icon>
         Borrar                                
-    </ion-button>
+      </ion-button>
     </ion-item>    
     <ion-item *ngFor="let push of mensajes">
       <ion-label>

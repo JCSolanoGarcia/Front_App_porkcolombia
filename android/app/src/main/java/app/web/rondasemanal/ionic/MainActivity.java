@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package app.web.rondasemanal.ionic;
 
 import android.os.Bundle;
 

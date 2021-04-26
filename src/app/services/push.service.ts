@@ -46,6 +46,10 @@ export class PushService {
     this.guardarMensajes();
   }
 
+  async deleteCodigo(){
+    await this.storage.remove('codigo');
+  }
+
   confiracionInicial(){
     this.oneSignal.startInit('333eabbc-5a73-4e56-9375-7fb8f9461a86', '531521260136');
     this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.Notification);

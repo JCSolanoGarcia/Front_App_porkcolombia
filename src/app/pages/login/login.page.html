@@ -4,6 +4,9 @@
     <ion-grid>
         <ion-row class="ion-align-items-center">
             <ion-col size="12" size-lg="6" size-md="6" class="ion-align-self-center">
+                <ion-item>
+                    <h3 class="fondo">Validar usuario</h3>
+                </ion-item>
                 <ion-card>
                     <form action="">
                         <ion-list>
@@ -15,7 +18,7 @@
                                 <ion-label position="stacked">Contraseña</ion-label>
                                 <ion-input type="password" [(ngModel)]="password" name="password"></ion-input>
                             </ion-item> 
-                            <ion-button expand="block" shape="round" type="submit" (click)="login()">Validar</ion-button> 
+                            <ion-button expand="block" shape="round" type="submit" (click)="login()">Click aqui para ingresar</ion-button> 
                             <ion-button expand="block" shape="round" type="submit" color="medium" [routerLink]="['/inicio']">
                                 Cancelar                                
                             </ion-button> 
@@ -23,10 +26,10 @@
                     </form>
                 </ion-card>
                 <div style="text-align: center;">
-                    <small>Olvido su contraseña? <a [routerLink]= "['/password']"> Recuperala aquí</a> </small>
+                    <small>Olvido su contraseña? <a [routerLink]= "['/password']"> Recupérala aquí</a> </small>
                 </div>
                 <div style="text-align: center;">
-                    <small>No tienes cuenta? <a [routerLink]= "['/registro']"> Registrate aquí</a> </small>
+                    <small>No tienes cuenta? <a [routerLink]= "['/registro']"> Regístrate aquí</a> </small>
                 </div>
             </ion-col>
         </ion-row>

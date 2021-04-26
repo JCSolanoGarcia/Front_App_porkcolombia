@@ -3,6 +3,12 @@
 <ion-content>
     <ion-list>
         <ion-item>
+            <ion-button expand="block" shape="round" type="button" color="medium" [routerLink]="['/inicio']">
+                <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+                Atras                                
+            </ion-button>
+        </ion-item>
+        <ion-item>
             <p style="text-align: justify;">
                 Señor porcicultor:
                 <br><br>
@@ -24,11 +30,14 @@
                 •	Comentarios: Comentarios breves y relevantes relacionados con el comportamiento del precio durante la última semana. <br><br>
         
                 Favor revisar la información antes de enviarla.
-        
+            </p>
         </ion-item>
-        <ion-button expand="block" shape="round" type="button" color="medium" [routerLink]="['/inicio']">
-            Atras                                
-        </ion-button>
-        
+        <ion-item>
+            <ion-button expand="block" shape="round" type="button" color="medium" [routerLink]="['/inicio']">
+                <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+                Atras                                
+            </ion-button>
+        </ion-item>
+                
     </ion-list>
 </ion-content>
