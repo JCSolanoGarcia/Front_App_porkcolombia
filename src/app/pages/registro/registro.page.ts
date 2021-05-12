@@ -42,33 +42,36 @@ export class RegistroPage implements OnInit {
   
   public errorMensaje = {
     nombre:[
-      {type:'required', message: 'El nombre es requerido'},
-      {type:'minlength', message: 'El nombre debe tener mas de 2 caracteres' }
+      {type:'required', message: 'El nombre es requerido.'},
+      {type:'minlength', message: 'El nombre debe tener mas de 2 caracteres.' }
     ],
     apellido:[
-      {type:'required', message: 'El apellido es requerido'},
-      {type:'minlength', message: 'El apellido debe tener mas de 2 caracteres' }
+      {type:'required', message: 'El apellido es requerido.'},
+      {type:'minlength', message: 'El apellido debe tener mas de 2 caracteres.' }
     ],
     celular:[
-      {type:'required', message: 'El celular es requerido'},
-      {type:'minlength', message: 'El celular debe tener mas de 10 números' },
-      {type:'maxlength', message: 'El celular debe tener mas de 10 números' }
+      {type:'required', message: 'El celular es requerido.'},
+      {type:'minlength', message: 'El celular debe tener mas de 10 números.' },
+      {type:'maxlength', message: 'El celular debe tener mas de 10 números.' }
     ],
     granja:[
-      {type:'required', message: 'La granja es requerida'},
-      {type:'minlength', message: 'La granja debe tener mas de 2 caracteres' }
+      {type:'required', message: 'La granja es requerida.'},
+      {type:'minlength', message: 'La granja debe tener mas de 2 caracteres.' }
     ],
     localizacion:[
-      {type:'required', message: 'La localizacion es requerida'}
+      {type:'required', message: 'La localizacion es requerida.'}
     ],
     email:[
-      {type:'required', message: 'El correo electrónico es requerido'},
-      {type:'pattern', message: 'Por favor ingrese un correo electrónico valido' }
+      {type:'required', message: 'El correo electrónico es requerido.'},
+      {type:'pattern', message: 'Por favor ingrese un correo electrónico valido.' }
     ],
     password:[
-      {type:'required', message: 'El password es requerido'},
-      {type:'minlength', message: 'El password debe tener mas de 6 caracteres' }
-    ],
+      {type:'required', message: 'El password es requerido.'},
+      {type:'minlength', message: 'El password debe tener mas de 6 caracteres.' }
+    ]/* ,
+    acepto:[
+      {type: 'required', message: 'Es obligatorio aceptar.'}
+    ] */
     
   }
 
@@ -116,10 +119,10 @@ export class RegistroPage implements OnInit {
         this.usuario.Celular = this.formRegistro.controls.celular.value;
         this.usuario.Email = this.formRegistro.controls.email.value;
         this.usuario.Password = this.formRegistro.controls.password.value;
-        console.log(this.usuario);
+        //console.log(this.usuario);
         this.crearUser();      
       } else{
-        this.auth.presentAlert('Atención', 'Para continuar debe aceptar las politicas de privacidad y proteccion de datos');
+        this.auth.presentAlert('Atención', 'Para continuar debe aceptar las politicas de privacidad y proteccion de datos.');
         return;
       }
     }    
@@ -127,11 +130,16 @@ export class RegistroPage implements OnInit {
 
   crearUser(){
     this.auth.crear(this.usuario).then(resp=>{
-      this.usercreado = this.auth.uid;
+      this.usercreado = this.auth.uid;      
+      if(this.usercreado == undefined){
+        this.formRegistro.reset({
+          localizacion: '',
+        })
+        return this.router.navigateByUrl('/inicio');
+      }
       if(this.usercreado != ''){
         this.auth.getUser().then(resp=>{
-          this.usuarioLista = this.auth.listaUser;
-          console.log(this.usuarioLista); 
+          this.usuarioLista = this.auth.listaUser; 
           this.crearUsuario();
         });
       }
@@ -160,12 +168,12 @@ export class RegistroPage implements OnInit {
       codigoAlmacenado = (this.formRegistro.controls.localizacion.value).slice(0,3) + '001';
     }
     this.usuario.CodigoMostrar = codigoAlmacenado;  
-    console.log(this.usuario.CodigoMostrar);       
+    //console.log(this.usuario.CodigoMostrar);       
     this.auth.crearUser(this.usuario, this.usercreado).then(resp=>{
       this.formRegistro.reset({
-      localizacion: '',
-    })
-      this.auth.presentAlert('Buen trabajo!', 'Su usuario se ha creado exitosamente!!!')      
+        localizacion: '',
+      })
+      this.auth.presentAlert('Buen trabajo', 'Su usuario se ha creado exitosamente!')      
       this.router.navigateByUrl('/inicio');
     })    
   }

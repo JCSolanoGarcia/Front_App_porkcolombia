@@ -127,14 +127,14 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "app:serve"
+            "Target": "app:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "app:serve:production"
+              "Target": "app:serve:production"
             },
             "ci": {
-              "devServerTarget": "app:serve:ci"
+              "Target": "app:serve:ci"
             }
           }
         },
@@ -153,12 +153,12 @@
           "builder": "@ionic/angular-toolkit:cordova-serve",
           "options": {
             "cordovaBuildTarget": "app:ionic-cordova-build",
-            "devServerTarget": "app:serve"
+            "Target": "app:serve"
           },
           "configurations": {
             "production": {
               "cordovaBuildTarget": "app:ionic-cordova-build:production",
-              "devServerTarget": "app:serve:production"
+              "Target": "app:serve:production"
             }
           }
         }

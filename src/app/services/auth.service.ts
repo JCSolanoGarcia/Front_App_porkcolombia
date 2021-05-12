@@ -94,7 +94,7 @@ export class AuthService {
         let idtoken:any = data.user?.refreshToken;
         if(!data.user.emailVerified){
           loading.dismiss();
-          this.presentAlert('Atención', 'Este correo electrónico aun no ha sido verificado! Revise la bandeja de entrada de su correo electrónico')
+          this.presentAlert('Atención', 'Este correo electrónico aun no ha sido verificado! Revise la bandeja de entrada de su correo electrónico.')
           this.afauth.signOut();
         }else{
           this.guardarToken(idtoken);
@@ -110,12 +110,12 @@ export class AuthService {
       })
       .catch(error=>{
         loading.dismiss();
-        this.presentAlert('Error', 'Correo o contraseña incorrectos')
+        this.presentAlert('Error', 'Correo o contraseña incorrectos.')
       })
     })
     .catch(error=>{
       loading.dismiss();
-      this.presentAlert('Error', 'Algo anda mal, verifica los datos y vuelve a intentarlo')
+      this.presentAlert('Error', 'Algo anda mal, verifica los datos y vuelve a intentarlo.')
     })
   }// fin sign In
 
@@ -123,10 +123,10 @@ export class AuthService {
     return await this.afauth.createUserWithEmailAndPassword(dato.Email,dato.Password).then(userCredential =>{
       this.uid = userCredential.user?.uid;
       userCredential.user?.sendEmailVerification();
-      this.presentAlert('Atención', 'Usuario creado exitosamente, para continuar revise la bandeja de entrada de su correo electrónico')
+      this.presentAlert('Atención', 'Usuario creado exitosamente, para continuar revise la bandeja de entrada de su correo electrónico.')
       return this.uid;
     }).catch(error=>{
-      this.presentAlert('Atención', 'El correo electrónico ingresado ya esta registrado, utilice otro correo y vuelva a intentarlo')
+      this.presentAlert('Atención', 'El correo electrónico ingresado ya esta registrado, utilice otro correo y vuelva a intentarlo.')
     })   
   }
 
@@ -145,13 +145,13 @@ export class AuthService {
     return await this.afs.collection('Usuarios').doc().set(userTemp1).then(resp=>{
       
      }).catch(error=>{
-      this.presentAlert('Atención', 'Ha ocurrido un error, por favor vuelve a intentarlo más tarde')
+      this.presentAlert('Atención', 'Ha ocurrido un error, por favor vuelve a intentarlo más tarde.')
     })
   }
 
   recuperarContrasena(usuario: string){
     return this.afauth.sendPasswordResetEmail(usuario).then(resp=>{
-      this.presentAlert('Atencion', 'Revise la bandeja de entrada de su correo electrónico para continuar')
+      this.presentAlert('Atencion', 'Revise la bandeja de entrada de su correo electrónico para continuar.')
       this.router.navigateByUrl('/login');
     })
   } 
@@ -166,7 +166,7 @@ export class AuthService {
     .then(()=>{
       loading.dismiss();
       this.router.navigate(['/login']);
-      console.log("Deberia volver a login");
+      //console.log("Deberia volver a login");
     })
   }
 
@@ -185,7 +185,7 @@ export class AuthService {
             Semana: ronda.Semana,
             UltimoDia: ronda.UltimoDia,            
     }).then(resp=>{
-      this.presentAlert('Buen trabajo', 'Registro creado exitosamente!!!') 
+      this.presentAlert('Buen trabajo', 'Registro creado exitosamente!') 
     })
   }
 
@@ -274,7 +274,7 @@ export class AuthService {
   logOut(){
     return this.afauth.signOut().then(()=>{    
       localStorage.clear();
-      this.presentAlert('Atencion', 'Gracias por participar') 
+      this.presentAlert('Atencion', 'Gracias por participar.') 
       this.router.navigateByUrl('/inicio');
     })
   }

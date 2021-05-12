@@ -25,7 +25,7 @@ export class AlertPage implements OnInit {
   }
 
   async ionViewWillEnter(){
-    console.log('cargando mensajes de will');    
+    //console.log('cargando mensajes de will');    
     this.mensajes = await this.pushService.getMensajes();
   }
 

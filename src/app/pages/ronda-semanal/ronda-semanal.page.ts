@@ -62,29 +62,29 @@ export class RondaSemanalPage implements OnInit {
 
   public errorMensaje = {
     producto:[
-      {type:'required', message: 'El producto es requerido'}
+      {type:'required', message: 'El producto es requerido.'}
     ],
     cantidad:[
-      {type:'required', message: 'La cantidad es requerida'},
-      {type:'min', message: 'La cantidad debe ser mayor a 1' },
-      {type:'max', message: 'La cantidad debe ser menor a 10000' }
+      {type:'required', message: 'La cantidad es requerida.'},
+      {type:'min', message: 'La cantidad debe ser mayor a 1.' },
+      {type:'max', message: 'La cantidad debe ser menor a 10000.' }
     ],
     peso:[
-      {type:'required', message: 'El peso es requerido'},
-      {type:'min', message: 'El peso debe ser superior a 69 Kilos' },
-      {type:'max', message: 'El peso debe ser inferior a 131 Kilos' }
+      {type:'required', message: 'El peso es requerido.'},
+      {type:'min', message: 'El peso debe ser superior a 69 Kilos.' },
+      {type:'max', message: 'El peso debe ser inferior a 131 Kilos.' }
     ],
     precio:[
-      {type:'required', message: 'El precio es requerido'}
+      {type:'required', message: 'El precio es requerido.'}
     ],
     mercado:[
-      {type:'required', message: 'El mercado es requerido'}
+      {type:'required', message: 'El mercado es requerido.'}
     ],
     entrega:[
-      {type:'required', message: 'El lugar de entrega es requerido'}
+      {type:'required', message: 'El lugar de entrega es requerido.'}
     ],
     envia:[
-      {type:'required', message: 'Este campo es requerido'}
+      {type:'required', message: 'Este campo es requerido.'}
     ]    
   }
 
@@ -129,6 +129,8 @@ export class RondaSemanalPage implements OnInit {
 
   async cargarDatos(){
     this.numeroSemana = this.auth.numeroSemana;
+    console.log(this.numeroSemana);
+    
     this.auth.getProducto().then(resp=>{
       this.productoLista = this.auth.listaProducto;     
     })
@@ -189,7 +191,7 @@ export class RondaSemanalPage implements OnInit {
 
   guardar(){   
     if(this.formRonda.invalid){
-      this.auth.presentAlert('Atención', 'Es necesario diligenciar todos los campos obligatorios *');
+      this.auth.presentAlert('Atención', 'Es necesario diligenciar todos los campos obligatorios *.');
       this.formRonda.markAllAsTouched();
       return;
     }   
@@ -203,7 +205,7 @@ export class RondaSemanalPage implements OnInit {
         this.controlPrecio = false;
       }else {
         this.controlPrecio = true;
-        this.auth.presentAlert('Atención', 'El precio que esta registrando esta por fuera del rango establecido para el producto seleccionado');
+        this.auth.presentAlert('Atención', 'El precio que esta registrando esta por fuera del rango establecido para el producto seleccionado.');
         precioNo?.focus();
         return;
       }
@@ -212,7 +214,7 @@ export class RondaSemanalPage implements OnInit {
         this.controlPrecio = false;
       }else{
         this.controlPrecio = true;
-        this.auth.presentAlert('Atención', 'El precio que esta registrando esta por fuera del rango establecido para el producto seleccionado');
+        this.auth.presentAlert('Atención', 'El precio que esta registrando esta por fuera del rango establecido para el producto seleccionado.');
         precioNo?.focus();
         return;
       }
@@ -232,7 +234,7 @@ export class RondaSemanalPage implements OnInit {
 
   async continuarRegistro(){    
     await this.auth.setRonda(this.ronda).then(resp=>{
-      this.auth.presentAlert('Buen trabajo', 'Registro creado exitosamente!!!');              
+      this.auth.presentAlert('Buen trabajo', 'Registro creado exitosamente!');              
       if(this.formRonda.controls.envia.value == 'Si'){
         this.formRonda.reset({
           producto:'',

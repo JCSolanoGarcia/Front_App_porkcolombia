@@ -467,7 +467,7 @@ export class AdminPage implements OnInit {
           this.rondaLista1.push(registro);
         }
       }
-      console.log(this.rondaLista1);  
+      //console.log(this.rondaLista1);  
       setTimeout(() => {
         this.exportToExcel1();
       }, 2000);      
