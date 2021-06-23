@@ -10,7 +10,7 @@ import { PushService } from 'src/app/services/push.service';
 })
 export class AlertPage implements OnInit { 
 
-  mensajes: OSNotificationPayload[]=[];
+  mensajes: any[]=[];
   constructor(
     public pushService: PushService,
     private alertCtrl: AlertController
@@ -25,8 +25,9 @@ export class AlertPage implements OnInit {
   }
 
   async ionViewWillEnter(){
-    //console.log('cargando mensajes de will');    
+       
     this.mensajes = await this.pushService.getMensajes();
+    //console.log('cargando mensajes de will',this.mensajes); 
   }
 
   async borrarMensaje(){

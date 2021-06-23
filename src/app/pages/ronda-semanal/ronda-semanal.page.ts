@@ -99,12 +99,12 @@ export class RondaSemanalPage implements OnInit {
     private storage: Storage
   ) {    
     this.crearFormulario();
-    this.init();    
+    this.init();      
   }
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
-    this.consultaEstado();       
+    this.consultaEstado();            
   } 
 
   async init() {
@@ -132,7 +132,10 @@ export class RondaSemanalPage implements OnInit {
     console.log(this.numeroSemana);
     
     this.auth.getProducto().then(resp=>{
-      this.productoLista = this.auth.listaProducto;     
+      this.productoLista = this.auth.listaProducto;
+      console.log(this.productoLista);
+      console.log(this.productoLista[1].Minimo);
+           
     })
     this.auth.getLocalizacion().then(resp=>{
       this.mercadoLista = this.auth.listaMercados;     
@@ -200,8 +203,20 @@ export class RondaSemanalPage implements OnInit {
 
   enviarProducto(){ 
     let precioNo = document.getElementById('precio');
-    if(this.formRonda.controls.producto.value == 'Cerdo en Pie'){
-      if(this.formRonda.controls.precio.value >= 5000 && this.formRonda.controls.precio.value <= 8500){
+    for(let prod of this.productoLista){
+      if(this.formRonda.controls.producto.value == prod.Nombre){
+        if(this.formRonda.controls.precio.value >= prod.Minimo && this.formRonda.controls.precio.value <= prod.Maximo){
+          this.controlPrecio = false;
+        }else {
+          this.controlPrecio = true;
+          this.auth.presentAlert('Atención', 'El precio que esta registrando esta por fuera del rango establecido para el producto seleccionado.');
+          precioNo?.focus();
+          return;
+        }
+      }
+    }
+    /* if(this.formRonda.controls.producto.value == this.productoLista[0].Nombre){
+      if(this.formRonda.controls.precio.value >= this.productoLista[0].Minimo && this.formRonda.controls.precio.value <= this.productoLista[0].Maximo){
         this.controlPrecio = false;
       }else {
         this.controlPrecio = true;
@@ -210,7 +225,7 @@ export class RondaSemanalPage implements OnInit {
         return;
       }
     } else if(this.formRonda.controls.producto.value != 'Cerdo en Pie' && this.formRonda.controls.producto.value != ''){
-      if(this.formRonda.controls.precio.value >= 7000 && this.formRonda.controls.precio.value <= 12000){
+      if(this.formRonda.controls.precio.value >= this.productoLista[1].Minimo && this.formRonda.controls.precio.value <= this.productoLista[1].Maximo){
         this.controlPrecio = false;
       }else{
         this.controlPrecio = true;
@@ -218,13 +233,13 @@ export class RondaSemanalPage implements OnInit {
         precioNo?.focus();
         return;
       }
-    }  
+    }   */
     this.ronda.Fecha = this.fecha;
     this.ronda.Semana = this.numeroSemana;
     this.ronda.UltimoDia = this.finSemana;
     this.ronda.Producto = this.formRonda.controls.producto.value;
-    this.ronda.Cantidad = this.formRonda.controls.cantidad.value;
-    this.ronda.Precio = this.formRonda.controls.precio.value;
+    this.ronda.Cantidad = parseInt(this.formRonda.controls.cantidad.value);
+    this.ronda.Precio = parseInt(this.formRonda.controls.precio.value);
     this.ronda.Peso = this.formRonda.controls.peso.value;
     this.ronda.Mercado = this.formRonda.controls.mercado.value;
     this.ronda.Entrega = this.formRonda.controls.entrega.value;
@@ -233,8 +248,7 @@ export class RondaSemanalPage implements OnInit {
   }
 
   async continuarRegistro(){    
-    await this.auth.setRonda(this.ronda).then(resp=>{
-      this.auth.presentAlert('Buen trabajo', 'Registro creado exitosamente!');              
+    await this.auth.setRonda(this.ronda).then(resp=>{              
       if(this.formRonda.controls.envia.value == 'Si'){
         this.formRonda.reset({
           producto:'',

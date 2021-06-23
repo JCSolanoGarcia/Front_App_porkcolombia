@@ -18,7 +18,7 @@ export class AppComponent {
 
   initializeApp(){
     this.platform.ready().then(()=>{
-      this.pushService.confiracionInicial();
+      this.pushService.configuracionInicial();
     })
   }
 }

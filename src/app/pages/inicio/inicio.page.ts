@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { IonicSafeString } from '@ionic/core';
 import { PushService } from 'src/app/services/push.service';
+import { Platform } from '@ionic/angular';
 
 interface Componente{
   icon: string;
@@ -13,8 +15,7 @@ interface Componente{
   styleUrls: ['./inicio.page.scss'],
 })
 export class InicioPage implements OnInit {
-  componentes: Componente[]=[
-    
+  componentes: Componente[]=[    
     {
       icon: 'person-add-outline',
       name: 'Registrarme',
@@ -36,12 +37,19 @@ export class InicioPage implements OnInit {
       redirectTo: '/alert'
     }
   ]
-  
+
   constructor(
     public pushService: PushService,
-  ) { }
+    public platform: Platform,
+  ) {}
 
   ngOnInit() {
   }
 
+  salir(){
+    navigator["app"].exitApp();
+    /* if(window.confirm("Esta seguro de salir de la aplicación")){
+      navigator["app"].exitApp();
+    }       */
+  }
 }

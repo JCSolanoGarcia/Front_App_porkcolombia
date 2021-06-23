@@ -4,12 +4,24 @@
     <ion-grid>
         <ion-row class="ion-align-items-center">
             <ion-col size="12" size-lg="6" size-md="6" class="ion-align-self-center">
-                <ion-item>
+                <ion-item lines="none">
                     <h3 class="fondo">Ronda Semanal</h3>
                 </ion-item>
                 <ion-card>
                     <form [formGroup]="formRonda" (ngSubmit)="guardar()">
                         <ion-list>
+                            <ion-item>
+                                <ion-label position="stacked">Ubicación mercado <a class="obligatorio">*</a></ion-label>
+                                <ion-select class="custom-options" 
+                                            formControlName ="mercado">
+                                    <ion-select-option *ngFor="let mercado of mercadoLista" value="{{mercado}}">{{mercado}}</ion-select-option>
+                                </ion-select>
+                              </ion-item>
+                              <div *ngFor="let error of errorMensaje.mercado">
+                                  <ng-container *ngIf="mercado.hasError(error.type) && (mercado.dirty || mercado.touched)">
+                                      <small class="error-message">{{error.message}}</small>
+                                  </ng-container>                    
+                              </div>
                             <ion-item>
                                 <ion-label position="stacked">Producto <a class="obligatorio">*</a></ion-label>
                                 <ion-select class="custom-options"                                            
@@ -34,7 +46,18 @@
                                 </ng-container>                    
                             </div>
                             <ion-item>
-                              <ion-label position="stacked">Peso promedio (Kg) <a class="obligatorio">*</a></ion-label>
+                                <ion-label position="stacked">Precio($/Kg) <a class="obligatorio">*</a></ion-label>
+                                <ion-input type="number" 
+                                            formControlName ="precio">
+                                        </ion-input>
+                              </ion-item>
+                              <div *ngFor="let error of errorMensaje.precio">
+                                  <ng-container *ngIf="precio.hasError(error.type) && (precio.dirty || precio.touched)">
+                                      <small class="error-message">{{error.message}}</small>
+                                  </ng-container>                    
+                              </div>
+                            <ion-item>
+                              <ion-label position="stacked">Peso promedio (Kg/animal-canal) <a class="obligatorio">*</a></ion-label>
                               <ion-input type="number" 
                                           formControlName ="peso">
                                       </ion-input>
@@ -43,30 +66,7 @@
                                 <ng-container *ngIf="peso.hasError(error.type) && (peso.dirty || peso.touched)">
                                     <small class="error-message">{{error.message}}</small>
                                 </ng-container>                    
-                            </div>
-                            <ion-item>
-                              <ion-label position="stacked">Precio <a class="obligatorio">*</a></ion-label>
-                              <ion-input type="number" 
-                                          formControlName ="precio">
-                                      </ion-input>
-                            </ion-item>
-                            <div *ngFor="let error of errorMensaje.precio">
-                                <ng-container *ngIf="precio.hasError(error.type) && (precio.dirty || precio.touched)">
-                                    <small class="error-message">{{error.message}}</small>
-                                </ng-container>                    
-                            </div>
-                            <ion-item>
-                              <ion-label position="stacked">Ubicación mercado <a class="obligatorio">*</a></ion-label>
-                              <ion-select class="custom-options" 
-                                          formControlName ="mercado">
-                                  <ion-select-option *ngFor="let mercado of mercadoLista" value="{{mercado}}">{{mercado}}</ion-select-option>
-                              </ion-select>
-                            </ion-item>
-                            <div *ngFor="let error of errorMensaje.mercado">
-                                <ng-container *ngIf="mercado.hasError(error.type) && (mercado.dirty || mercado.touched)">
-                                    <small class="error-message">{{error.message}}</small>
-                                </ng-container>                    
-                            </div>
+                            </div>                           
                             <ion-item>
                               <ion-label position="stacked">Lugar de entrega <a class="obligatorio">*</a></ion-label>
                               <ion-select class="custom-options" 
@@ -97,7 +97,7 @@
                                   <small class="error-message">{{error.message}}</small>
                               </ng-container>                    
                             </div>                            
-                            <ion-button expand="block" shape="round" type="submit">
+                            <ion-button class="margenTop" expand="block" shape="round" type="submit">
                                 Enviar
                                 <ion-icon slot="end" name="create"></ion-icon>
                             </ion-button>  

@@ -4,12 +4,18 @@
   <ion-grid>
     <ion-row class="ion-align-items-center">
         <ion-col size="12" size-lg="6" size-md="6" class="ion-align-self-center">
-          <ion-list>
+          <ion-list class="ion-padding">
             <ion-item *ngFor="let item of componentes"
                       [routerLink]="item.redirectTo"
-                      detail>
+                      detail
+                      class="alto"
+                      lines ="none">
               <ion-icon [name]="item.icon" slot="start" color="primary"></ion-icon>
               {{item.name}}
+            </ion-item>
+            <ion-item (click) = "salir()" detail class="alto" lines ="none">
+              <ion-icon name = "exit-outline" slot= "start" color="primary"></ion-icon>
+              Salir
             </ion-item>
           </ion-list>
           

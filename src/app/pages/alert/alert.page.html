@@ -3,10 +3,10 @@
 <ion-content>    
   <ion-list>
     <ion-list-header>
-      <ion-label><h2>   Notificaciones </h2> </ion-label>
+      <ion-label><h2>Historial de notificaciones </h2></ion-label>
     </ion-list-header>
     <ion-item>
-      <ion-button slot="start"  shape="round" type="button" color="primary" size="small" [routerLink]="['/inicio']">
+      <ion-button slot="start"  shape="round" type="button" color="medium" size="small" [routerLink]="['/inicio']">
         <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
         Atras                                
       </ion-button>      
@@ -19,11 +19,12 @@
     <ion-item *ngFor="let push of mensajes">
       <ion-card>
         <ion-card-header>
-          <ion-card-title>{{ push.title }} </ion-card-title>
+          <p>{{push[0].date}}</p>
+          <ion-card-title>{{ push[0].title }} </ion-card-title>
         </ion-card-header>      
         <ion-card-content>
           <p>
-            {{ push.body }}
+            {{ push[0].body }}
           </p>
         </ion-card-content>      
       </ion-card>

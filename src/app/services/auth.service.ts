@@ -26,6 +26,7 @@ export class AuthService {
   listaUser : any = [];
   listaIdUser : any=[];
   listaMercados : any = [];
+  listaRangos : any = [];
   listaProducto : any = [];
   listaEntrega : any = [];
   estadoRonda: any = [];
@@ -37,6 +38,7 @@ export class AuthService {
   listaSemanas: any =[];
   listaOtra: any = [];
   uid: any;
+  usuario;
 
   constructor(
     private afs: AngularFirestore,
@@ -48,7 +50,7 @@ export class AuthService {
   ) {
     this.user$ = this.afauth.authState.pipe(
       switchMap( user => {
-        console.log("user", user.email);
+       
         if(user){
           return this.afs.doc<UserInterface>(`user/ ${user.uid}`).valueChanges();         
         }else{
@@ -121,16 +123,33 @@ export class AuthService {
 
   async crear(dato: UserInterface){  
     return await this.afauth.createUserWithEmailAndPassword(dato.Email,dato.Password).then(userCredential =>{
-      this.uid = userCredential.user?.uid;
+      this.uid = userCredential.user.uid;
       userCredential.user?.sendEmailVerification();
-      this.presentAlert('Atención', 'Usuario creado exitosamente, para continuar revise la bandeja de entrada de su correo electrónico.')
       return this.uid;
     }).catch(error=>{
       this.presentAlert('Atención', 'El correo electrónico ingresado ya esta registrado, utilice otro correo y vuelva a intentarlo.')
     })   
   }
 
-  async crearUser(datos: UserInterface, uid: string ){
+  async eliminarUser(mail, pass){
+    this.afauth.setPersistence(firebase.default.auth.Auth.Persistence.LOCAL)
+    .then(()=>{
+      this.afauth.signInWithEmailAndPassword(mail, pass).then((data)=>{
+        data.user.delete().then(ar=>{
+          this.router.navigateByUrl('/registro');
+          return;
+        })          
+      })
+      .catch(error=>{        
+        this.presentAlert('Error', 'Ha ocurrido un error.');
+      })
+    })
+    .catch(error=>{      
+      this.presentAlert('Error', 'Ha ocurrido un error.');
+    })
+  }
+
+  async crearUser(datos: UserInterface ){
     const userTemp1={
       Nombre : datos.Nombre,
       Apellido : datos.Apellido,
@@ -140,7 +159,7 @@ export class AuthService {
       Localizacion : datos.Localizacion,
       CodigoMostrar : datos.CodigoMostrar,
       Estado: datos.Estado,
-      IdUsuario: uid
+      IdUsuario: datos.IdUsuario
     }    
     return await this.afs.collection('Usuarios').doc().set(userTemp1).then(resp=>{
       
@@ -271,10 +290,10 @@ export class AuthService {
     })
   }
 
-  logOut(){
-    return this.afauth.signOut().then(()=>{    
+  async logOut(){
+    return await this.afauth.signOut().then(()=>{    
       localStorage.clear();
-      this.presentAlert('Atencion', 'Gracias por participar.') 
+      this.presentAlert('Señor Porcicultor', 'Gracias por participar y compartir su información.') 
       this.router.navigateByUrl('/inicio');
     })
   }

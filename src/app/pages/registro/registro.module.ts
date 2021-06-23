@@ -9,6 +9,7 @@ import { RegistroPageRoutingModule } from './registro-routing.module';
 
 import { RegistroPage } from './registro.page';
 import { ComponentsModule } from 'src/app/components/components.module';
+import { FinalPageModule } from '../final/final.module';
 
 @NgModule({
   imports: [
@@ -16,8 +17,10 @@ import { ComponentsModule } from 'src/app/components/components.module';
     ReactiveFormsModule,
     IonicModule,
     RegistroPageRoutingModule,
-    ComponentsModule
+    ComponentsModule, 
+    FinalPageModule,   
   ],
-  declarations: [RegistroPage]
+  declarations: [RegistroPage],
+  exports:[RegistroPage],
 })
 export class RegistroPageModule {}

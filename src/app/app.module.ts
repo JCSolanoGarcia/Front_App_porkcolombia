@@ -27,6 +27,8 @@ import { ChartsModule } from 'ng2-charts';
 import { OneSignal } from '@ionic-native/onesignal/ngx';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { HttpClientModule } from '@angular/common/http';
+import { RegistroPageModule } from './pages/registro/registro.module';
+import { FinalPageModule } from './pages/final/final.module';
 
 
 @NgModule({
@@ -44,7 +46,9 @@ import { HttpClientModule } from '@angular/common/http';
     AngularFireStorageModule,
     ChartsModule,
     IonicStorageModule.forRoot(),
-    HttpClientModule
+    HttpClientModule,
+    RegistroPageModule,
+    FinalPageModule,
   ],
   providers: [
     AuthService,

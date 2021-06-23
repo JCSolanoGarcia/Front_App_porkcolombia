@@ -2,6 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { OneSignal, OSNotification, OSNotificationPayload } from '@ionic-native/onesignal/ngx';
 import { Storage } from '@ionic/storage';
+import { Router } from '@angular/router';
 
 
 @Injectable({
@@ -9,8 +10,9 @@ import { Storage } from '@ionic/storage';
 })
 export class PushService {
 
-  mensajes: OSNotificationPayload[] =[]
-  pushListener = new EventEmitter<OSNotificationPayload>();
+  mensajes: any[] =[];
+  payload: any[] = [];
+  pushListener = new EventEmitter<any>();
   userId : string;
 
   private _storage: Storage | null = null;
@@ -18,6 +20,7 @@ export class PushService {
     private oneSignal: OneSignal,
     private storage: Storage,
     private http: HttpClient,
+    private router: Router,
   ) {
     this.init();
     this.cargarMensajes();
@@ -50,7 +53,7 @@ export class PushService {
     await this.storage.remove('codigo');
   }
 
-  confiracionInicial(){
+  configuracionInicial(){
     this.oneSignal.startInit('333eabbc-5a73-4e56-9375-7fb8f9461a86', '531521260136');
     this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.Notification);
 
@@ -75,23 +78,26 @@ export class PushService {
   }
 
   async notificacionRecibida(noti: OSNotification){
+    this.router.navigateByUrl('/alert');// navegar
     await this.cargarMensajes();
-    const payload = noti.payload;
-    const existePush = this.mensajes.find( mensaje=> mensaje.notificationID === payload.notificationID)
+    this.payload = [{
+      id: noti.payload.notificationID,
+      title: noti.payload.title,
+      body: noti.payload.body,
+      date: new Date().toLocaleString()
+    }]
+    //const payload = noti.payload;
+    const existePush = this.mensajes.find( mensaje=> mensaje[0].id === noti.payload.notificationID)
     if(existePush){
       return;
-    }
-    console.log('mensaje aqui');
-    
-    this.mensajes.unshift(payload);
-    this.pushListener.emit(payload);
+    }    
+    this.mensajes.unshift(this.payload);
+    this.pushListener.emit(this.payload);
     await this.guardarMensajes();
   }
 
   guardarMensajes(){
-    this.storage.set('mensajes', this.mensajes);
-    console.log("mensaje guardado");
-    
+    this.storage.set('mensajes', this.mensajes);    
   }
 
   async cargarMensajes(){

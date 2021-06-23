@@ -4,7 +4,7 @@
     <ion-grid>
         <ion-row class="ion-align-items-center">
             <ion-col size="12" size-lg="6" size-md="6" class="ion-align-self-center">
-                <ion-item>
+                <ion-item lines="none">
                     <h3 class="fondo">Validar usuario</h3>
                 </ion-item>
                 <ion-card>
@@ -18,7 +18,7 @@
                                 <ion-label position="stacked">Contraseña</ion-label>
                                 <ion-input type="password" [(ngModel)]="password" name="password"></ion-input>
                             </ion-item> 
-                            <ion-button expand="block" shape="round" type="submit" (click)="login()">Click aqui para ingresar</ion-button> 
+                            <ion-button class="margenTop" expand="block" shape="round" type="submit" (click)="login()">Click aqui para ingresar</ion-button> 
                             <ion-button expand="block" shape="round" type="submit" color="medium" [routerLink]="['/inicio']">
                                 Cancelar                                
                             </ion-button> 
