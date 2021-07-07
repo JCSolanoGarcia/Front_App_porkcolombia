@@ -10,74 +10,10 @@
                 <ion-card>
                     <form [formGroup]="formRegistro" (ngSubmit)="guardar()">
                         <ion-list>
-                           <!--  <ion-item>
-                                <ion-label position="stacked">Nombre <a class="obligatorio">*</a></ion-label>
-                                <ion-input inputmode="text"
-                                            autocapitalize
-                                            formControlName="nombre">
-                                        </ion-input>                            
-                            </ion-item>
-                            <div *ngFor="let error of errorMensaje.nombre">
-                                <ng-container *ngIf="nombre.hasError(error.type) && (nombre.dirty || nombre.touched)">
-                                    <small class="error-message">{{error.message}}</small>
-                                </ng-container>                    
-                            </div>
-                            <ion-item>
-                                <ion-label position="stacked">Apellido <a class="obligatorio">*</a></ion-label>
-                                <ion-input inputmode="text" 
-                                            autocapitalize 
-                                            formControlName ="apellido">
-                                        </ion-input>
-                            </ion-item>
-                            <div *ngFor="let error of errorMensaje.apellido">
-                                <ng-container *ngIf="apellido.hasError(error.type) && (apellido.dirty || apellido.touched)">
-                                    <small class="error-message">{{error.message}}</small>
-                                </ng-container>                    
-                            </div>
-                            <ion-item>
-                                <ion-label position="stacked">Número celular <a class="obligatorio">*</a></ion-label>
-                                <ion-input inputmode="tel" 
-                                            formControlName ="celular">
-                                        </ion-input>
-                            </ion-item>
-                            <div *ngFor="let error of errorMensaje.celular">
-                                <ng-container *ngIf="celular.hasError(error.type) && (celular.dirty || celular.touched)">
-                                    <small class="error-message">{{error.message}}</small>
-                                </ng-container>                    
-                            </div>
-                            <ion-item>
-                                <ion-label position="stacked">Granja <a class="obligatorio">*</a></ion-label>
-                                <ion-input inputmode="text" 
-                                            autocapitalize="" 
-                                            formControlName ="granja">
-                                        </ion-input>
-                            </ion-item>
-                            <div *ngFor="let error of errorMensaje.granja">
-                                <ng-container *ngIf="granja.hasError(error.type) && (granja.dirty || granja.touched)">
-                                    <small class="error-message">{{error.message}}</small>
-                                </ng-container>                    
-                            </div>
-                            <ion-item>
-                                <ion-label position="stacked">Seleccione una localización <a class="obligatorio">*</a></ion-label>
-                                <ion-select class="custom-options" 
-                                            formControlName ="localizacion">
-                                    <ion-select-option value="Antioquia">Antioquia</ion-select-option>
-                                    <ion-select-option value="Eje Cafetero">Eje Cafetero</ion-select-option>
-                                    <ion-select-option value="Valle del Cauca">Valle del Cauca</ion-select-option>
-                                    <ion-select-option value="Caribe Norte">Caribe Norte</ion-select-option>
-                                    <ion-select-option value="Bogotá">Bogotá</ion-select-option>
-                                </ion-select>
-                            </ion-item>
-                            <div *ngFor="let error of errorMensaje.localizacion">
-                                <ng-container *ngIf="localizacion.hasError(error.type) && (localizacion.dirty || localizacion.touched)">
-                                    <small class="error-message">{{error.message}}</small>
-                                </ng-container>                    
-                            </div> -->
                             <ion-item>
                                 <ion-label position="stacked">Correo Electrónico <a class="obligatorio">*</a></ion-label>
                                 <ion-input type="email" 
-                                            formControlName ="email"
-                                            [(ngModel)]="mail">
+                                            formControlName ="email">
                                         </ion-input>
                             </ion-item>
                             <div *ngFor="let error of errorMensaje.email">
@@ -88,8 +24,7 @@
                             <ion-item>
                                 <ion-label position="stacked">Contraseña <a class="obligatorio">*</a></ion-label>
                                 <ion-input type="password" 
-                                            formControlName ="password"
-                                            [(ngModel)]="senal">
+                                            formControlName ="password">
                                         </ion-input>
                             </ion-item>
                             <div *ngFor="let error of errorMensaje.password">
@@ -97,16 +32,6 @@
                                     <small class="error-message">{{error.message}}</small>
                                 </ng-container>                    
                             </div> 
-                            <!-- <ion-item>
-                                <ion-checkbox id ="acepto" slot="start"></ion-checkbox>
-                                <a href="https://www.miporkcolombia.co/politica-de-privacidad/" class="href"><small>Acepto la política de privacidad y proteccion de datos personales de Porkcolombia F.N.P. <a class="obligatorio">*</a></small></a>
-                            </ion-item> --> 
-                            <!-- <div *ngFor="let error of errorMensaje.acepto">
-                                <ng-container *ngIf="acepto.hasError(error.type) && (acepto.dirty || acepto.touched)">
-                                    <small class="error-message">{{error.message}}</small>
-                                </ng-container>                    
-                            </div> -->
-                            
                             <ion-button expand="block" shape="round" type="submit" class="margenTop">
                                 Continuar
                                 <ion-icon slot="end" name="create"></ion-icon>

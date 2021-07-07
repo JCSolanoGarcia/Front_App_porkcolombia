@@ -54,7 +54,7 @@ export class PushService {
   }
 
   configuracionInicial(){
-    this.oneSignal.startInit('333eabbc-5a73-4e56-9375-7fb8f9461a86', '531521260136');
+    this.oneSignal.startInit('84ff21c0-65d3-41e2-a845-c06d3d7dbc8c', '531521260136');
     this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.Notification);
 
     this.oneSignal.handleNotificationReceived().subscribe((noti) => {

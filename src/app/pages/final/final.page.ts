@@ -138,11 +138,11 @@ export class FinalPage implements OnInit {
       codigoAlmacenado = (this.formRegistro.controls.localizacion.value).slice(0,3) + '001';
     }
     this.usuario.CodigoMostrar = codigoAlmacenado;        
-    this.auth.crearUser(this.usuario).then(resp=>{
+    this.auth.crearUser(this.usuario).then(resp=>{      
       this.formRegistro.reset({
         localizacion: '',
-      })
-      this.auth.presentAlert('Atención', 'Usuario creado exitosamente, para continuar revise la bandeja de entrada de su correo electrónico.');     
+      })      
+      this.auth.presentAlert('Atención', 'Podrá acceder a la Ronda en 24 horas, una vez Porkcolombia FNP valide los datos registrados.');     
       this.router.navigateByUrl('/inicio');
     })    
   }

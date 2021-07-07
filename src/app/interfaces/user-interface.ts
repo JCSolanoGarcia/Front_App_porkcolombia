@@ -8,7 +8,7 @@ export class UserInterface {
     Password: string;
     id: any = '';
     CodigoMostrar: string = '';
-    Estado= 'Activo';
+    Estado= 'Inactivo';
     IdUsuario: string = '';
     Participa: boolean= false;
 }

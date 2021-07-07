@@ -82,41 +82,59 @@ export class AuthService {
     this.finSemana = fechas[0].toLocaleString('en-US');  
   }
 
-   async signIn(email, password){
+  async seguridad(data, userActivo){
     const loading = await this.loadingController.create({
       message: `Autenticando....`,
       spinner: `crescent`,
       showBackdrop: true,
     });
     loading.present();
+    let abc = data.user?.email;
+    let idtoken:any = data.user?.refreshToken;
+    if(!data.user.emailVerified){
+      loading.dismiss();
+      this.presentAlert('Atención', 'Este correo electrónico aun no ha sido verificado! Revise la bandeja de entrada de su correo electrónico.')
+      this.afauth.signOut();
+    }else if(userActivo==true){
+      this.guardarToken(idtoken);
+      this.estaAutenticado();
+      loading.dismiss();
+      this.presentAlert('Bienvenido', abc)
+      if( data.user?.uid == 'GMKCSg38KnOgzcbW2aB52Tzb3bp1'){
+        this.router.navigateByUrl('/admin');   
+      }else{
+        this.router.navigateByUrl(`/ronda-semanal/${data.user?.uid}`);
+      }                       
+    }else{
+      loading.dismiss();
+      this.presentAlert('Atención', 'Estamos en proceso de verificación de los datos suministrados, pronto podrá acceder.')
+    }
+  }
+
+  async signIn(email, password){
+    let userActivo:boolean = false;
     this.afauth.setPersistence(firebase.default.auth.Auth.Persistence.LOCAL)
     .then(()=>{
       this.afauth.signInWithEmailAndPassword(email, password).then((data)=>{
-        let abc = data.user?.email;
-        let idtoken:any = data.user?.refreshToken;
-        if(!data.user.emailVerified){
-          loading.dismiss();
-          this.presentAlert('Atención', 'Este correo electrónico aun no ha sido verificado! Revise la bandeja de entrada de su correo electrónico.')
-          this.afauth.signOut();
-        }else{
-          this.guardarToken(idtoken);
-          this.estaAutenticado();
-          loading.dismiss();
-          this.presentAlert('Bienvenido', abc)
-          if( data.user?.uid == 'GMKCSg38KnOgzcbW2aB52Tzb3bp1'){
-            this.router.navigateByUrl('/admin');   
-          }else{
-            this.router.navigateByUrl(`/ronda-semanal/${data.user?.uid}`);
-          }                       
-        }
+        //Valida el estado de los usuarios para permitirles participar en la ronda
+        this.getUser().then(resp=>{
+          for(let user of this.listaUser){
+            if(user.IdUsuario == data.user?.uid){
+              if(user.Estado == "Activo"){                
+                userActivo = true;
+              }else{
+                userActivo = false;
+              }
+            }
+          }
+          this.seguridad(data,userActivo);
+        })        
       })
       .catch(error=>{
-        loading.dismiss();
         this.presentAlert('Error', 'Correo o contraseña incorrectos.')
       })
     })
     .catch(error=>{
-      loading.dismiss();
       this.presentAlert('Error', 'Algo anda mal, verifica los datos y vuelve a intentarlo.')
     })
   }// fin sign In
@@ -162,7 +180,7 @@ export class AuthService {
       IdUsuario: datos.IdUsuario
     }    
     return await this.afs.collection('Usuarios').doc().set(userTemp1).then(resp=>{
-      
+      this.presentAlert('Atención', 'Usuario creado exitosamente, para continuar revise la bandeja de entrada de su correo electrónico.');
      }).catch(error=>{
       this.presentAlert('Atención', 'Ha ocurrido un error, por favor vuelve a intentarlo más tarde.')
     })
@@ -212,7 +230,7 @@ export class AuthService {
     this.afs.collection('Estado').doc('1').set({Estado:estado, id:'1'});
   }
 
-  getUser(){        
+  async getUser(){        
     return this.afs.collection('Usuarios').get().forEach((element) => {
       this.listaUser.length=0;
       this.listaOtra=(element.docs);

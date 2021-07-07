@@ -129,13 +129,13 @@ export class RondaSemanalPage implements OnInit {
 
   async cargarDatos(){
     this.numeroSemana = this.auth.numeroSemana;
-    console.log(this.numeroSemana);
+    //console.log(this.numeroSemana);
     
     this.auth.getProducto().then(resp=>{
       this.productoLista = this.auth.listaProducto;
-      console.log(this.productoLista);
+      /* console.log(this.productoLista);
       console.log(this.productoLista[1].Minimo);
-           
+            */
     })
     this.auth.getLocalizacion().then(resp=>{
       this.mercadoLista = this.auth.listaMercados;     
