@@ -67,26 +67,25 @@ export class RegistroPage implements OnInit {
       }
     }     
 
-  crearUser(){  
+  crearUser(){   
     this.auth.crear(this.usuario).then(resp=>{
       this.usercreado = this.auth.uid;
-      //console.log(this.usercreado);           
+      let name = {
+        'uid' : this.usercreado,
+        'mail': this.usuario.Email,
+        'pass': this.usuario.Password
+      } 
+      console.log(this.usercreado);           
       if(this.usercreado == undefined){
-        this.formRegistro.reset({
-          localizacion: '',
-        })
+        this.formRegistro.reset();
         return this.router.navigateByUrl('/inicio');
       }
-      if(this.usercreado != ''){
-        let name = {
-          'uid' : this.usercreado,
-          'mail': this.usuario.Email,
-          'pass': this.usuario.Password
-        }
+      if(this.usercreado != ''){        
         this.auth.getUser().then(resp=>{
-          this.usuarioLista = this.auth.listaUser;
-          return this.router.navigateByUrl(`/final/${name.pass}/${name.uid}/${name.mail}`); 
+          this.usuarioLista = this.auth.listaUser;                  
         });
+        this.formRegistro.reset();
+        return this.router.navigateByUrl(`/final/${name.pass}/${name.uid}/${name.mail}`); 
       }
     })
   }

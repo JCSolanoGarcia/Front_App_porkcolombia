@@ -142,10 +142,10 @@ export class AuthService {
   async crear(dato: UserInterface){  
     return await this.afauth.createUserWithEmailAndPassword(dato.Email,dato.Password).then(userCredential =>{
       this.uid = userCredential.user.uid;
-      userCredential.user?.sendEmailVerification();
+      userCredential.user?.sendEmailVerification();      
       return this.uid;
-    }).catch(error=>{
-      this.presentAlert('Atención', 'El correo electrónico ingresado ya esta registrado, utilice otro correo y vuelva a intentarlo.')
+    }).catch(error=>{     
+      this.presentAlert('Atención', 'El correo electrónico ingresado ya esta registrado o tiene un formato incorrecto, utilice otro correo y vuelva a intentarlo.');
     })   
   }
 
