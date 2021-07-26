@@ -1,14 +1,14 @@
 export class RondaInterface {
-    Year= new Date().getFullYear();
-    Fecha : string = '';
-    UltimoDia: string ='';
-    Semana: string = '';
-    Producto: string ='';
-    Cantidad: number= 0;
-    Peso: number =0;
-    Precio : number = 0;     
-    Mercado: string = '';    
-    Comentario: string ='';
-    Entrega: string= '';
-    Usuario: string='';
+    year= new Date().getFullYear();
+    fecha : string = '';
+    ultimoDia: string ='';
+    semana: string = '';
+    producto: string ='';
+    cantidad: number= 0;
+    peso: number =0;
+    precio : number = 0;     
+    mercado: string = '';    
+    comentario: string ='';
+    entrega: string= '';
+    usuario: string='';
 }

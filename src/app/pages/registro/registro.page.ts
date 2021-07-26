@@ -61,32 +61,29 @@ export class RegistroPage implements OnInit {
       this.formRegistro.markAllAsTouched();
       return;
     }else{
-        this.usuario.Email = this.formRegistro.controls.email.value;
-        this.usuario.Password = this.formRegistro.controls.password.value;        
+        this.usuario.email = this.formRegistro.controls.email.value;
+        this.usuario.password = this.formRegistro.controls.password.value;        
         this.crearUser();      
       }
     }     
 
   crearUser(){   
-    this.auth.crear(this.usuario).then(resp=>{
-      this.usercreado = this.auth.uid;
-      let name = {
-        'uid' : this.usercreado,
-        'mail': this.usuario.Email,
-        'pass': this.usuario.Password
-      } 
-      console.log(this.usercreado);           
-      if(this.usercreado == undefined){
+    this.auth.crear(this.usuario).then(resp=>{         
+      if(resp.message === "The email address is already in use by another account."){    
         this.formRegistro.reset();
+        this.auth.presentAlert('Atención', 'El correo electrónico ingresado ya esta registrado o tiene un formato incorrecto, utilice un correo valido y vuelva a intentarlo.');
         return this.router.navigateByUrl('/inicio');
-      }
-      if(this.usercreado != ''){        
-        this.auth.getUser().then(resp=>{
-          this.usuarioLista = this.auth.listaUser;                  
-        });
+      } else {
+        let name = {
+          'uid' : resp,
+          'mail': this.usuario.email,
+          'pass': this.usuario.password
+        } 
         this.formRegistro.reset();
         return this.router.navigateByUrl(`/final/${name.pass}/${name.uid}/${name.mail}`); 
       }
+    }).catch(error=>{
+      this.formRegistro.reset();
     })
   }
   

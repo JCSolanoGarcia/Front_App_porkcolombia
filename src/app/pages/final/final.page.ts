@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { UserInterface } from 'src/app/interfaces/user-interface';
 import { AuthService } from 'src/app/services/auth.service';
+import { GeneralService } from 'src/app/services/general.service';
 
 @Component({
   selector: 'app-final',
@@ -13,7 +14,7 @@ import { AuthService } from 'src/app/services/auth.service';
 export class FinalPage implements OnInit {
     
   usuario= new UserInterface();
-  usuarioLista: UserInterface[]=[];
+  usuarioLista:UserInterface[]=[];
   mercadoLista: any[]=[];
   formRegistro:any= FormGroup;
   usercreado: any;
@@ -64,18 +65,20 @@ export class FinalPage implements OnInit {
 
   constructor(
     private auth: AuthService,
+    private general : GeneralService,
     private router: Router,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private alertCtrl: AlertController,
   ) {
     this.crearFormulario();
-    this.auth.getLocalizacion().then((a)=>{
-      this.mercadoLista = this.auth.listaMercados;      
+    this.general.getMercados().subscribe((resp: any)=>{
+      this.mercadoLista = resp["mercados"];        
     })
-    this.auth.getUser().then(resp=>{
-      this.usuarioLista = this.auth.listaUser;
-    });
+    this.general.getUsers().subscribe(resp=>{
+      this.usuarioLista = resp["users"];        
+    }) 
+    
   }
 
   ngOnInit() {
@@ -101,13 +104,14 @@ export class FinalPage implements OnInit {
       return;
     }else{
       if(this.acepto.checked){
-        this.usuario.Nombre = this.formRegistro.controls.nombre.value;
-        this.usuario.Apellido = this.formRegistro.controls.apellido.value;
-        this.usuario.Granja = this.formRegistro.controls.granja.value;
-        this.usuario.Localizacion = this.formRegistro.controls.localizacion.value;
-        this.usuario.Celular = this.formRegistro.controls.celular.value;
-        this.usuario.Email = this.email;
-        this.usuario.IdUsuario = this.uid;
+        this.usuario.nombre = this.formRegistro.controls.nombre.value;
+        this.usuario.apellido = this.formRegistro.controls.apellido.value;
+        this.usuario.granja = this.formRegistro.controls.granja.value;
+        this.usuario.localizacion = this.formRegistro.controls.localizacion.value;
+        this.usuario.celular = this.formRegistro.controls.celular.value;
+        this.usuario.email = this.email;
+        this.usuario.idUsuario = this.uid;
+        this.usuario.password= this.pass;
         this.crearUsuario();      
       } else{
         this.auth.presentAlert('Atención', 'Para continuar debe aceptar las politicas de privacidad y proteccion de datos.');
@@ -124,8 +128,8 @@ export class FinalPage implements OnInit {
     let aux: boolean = true;    
     if(this.usuarioLista.length){      
       for (let user of this.usuarioLista) {               
-        if(user.Localizacion == this.formRegistro.controls.localizacion.value){                    
-          listaCodigos.push(user.CodigoMostrar);
+        if(user.localizacion == this.formRegistro.controls.localizacion.value){                    
+          listaCodigos.push(user.codigoMostrar);
           aux = false;                              
         }      
       }
@@ -137,14 +141,15 @@ export class FinalPage implements OnInit {
     }else{
       codigoAlmacenado = (this.formRegistro.controls.localizacion.value).slice(0,3) + '001';
     }
-    this.usuario.CodigoMostrar = codigoAlmacenado;        
-    this.auth.crearUser(this.usuario).then(resp=>{      
+    this.usuario.codigoMostrar = codigoAlmacenado; 
+    this.general.setUser(this.usuario).subscribe(resp=>{
+      console.log(resp);
       this.formRegistro.reset({
         localizacion: '',
       })      
       this.auth.presentAlert('Atención', 'Podrá acceder a la Ronda en 24 horas, una vez Porkcolombia FNP valide los datos registrados.');     
       this.router.navigateByUrl('/inicio');
-    })    
+    })                 
   }
 
   async eliminar(){    

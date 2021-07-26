@@ -8,6 +8,8 @@ import { Observable, of } from 'rxjs';
 import { switchMap} from 'rxjs/operators';
 import { UserInterface } from '../interfaces/user-interface';
 import { RondaInterface } from '../interfaces/ronda-interface';
+import { Storage } from '@ionic/storage';
+import { GeneralService } from './general.service';
 
 
 declare global {
@@ -23,7 +25,6 @@ export class AuthService {
   user$: Observable<UserInterface>;
   user: UserInterface;
   userToken: any; 
-  listaUser : any = [];
   listaIdUser : any=[];
   listaMercados : any = [];
   listaRangos : any = [];
@@ -39,18 +40,22 @@ export class AuthService {
   listaOtra: any = [];
   uid: any;
   usuario;
+  credenciales: any;
+
+  private _storage: Storage | null = null;
 
   constructor(
     private afs: AngularFirestore,
+    private general: GeneralService,
     private afauth: AngularFireAuth,
     private router: Router,
     private loadingController: LoadingController,
     private toastcr: ToastController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private storage: Storage,
   ) {
     this.user$ = this.afauth.authState.pipe(
-      switchMap( user => {
-       
+      switchMap( user => {       
         if(user){
           return this.afs.doc<UserInterface>(`user/ ${user.uid}`).valueChanges();         
         }else{
@@ -58,11 +63,23 @@ export class AuthService {
         }
       })
     )
+    this.init();
     this.estaAutenticado(); 
     this.generarFechas();
-   }
+  }
 
-   generarFechas(){
+  async init() {
+    const storage = await this.storage.create();
+    this._storage = storage;
+  }
+
+ // Create and expose methods that users of this service can
+ // call, for example:
+  public set(key: string, value: any) {
+    this._storage?.set(key, value);
+  }
+
+  generarFechas(){
     Date.prototype.getWeek = function(start: any){
       var d: any = new Date(+this);  //Creamos un nuevo Date con la fecha de "this".
       d.setHours(0, 0, 0, 0);   //Nos aseguramos de limpiar la hora.
@@ -89,22 +106,19 @@ export class AuthService {
       showBackdrop: true,
     });
     loading.present();
-    let abc = data.user?.email;
     let idtoken:any = data.user?.refreshToken;
     if(!data.user.emailVerified){
       loading.dismiss();
-      this.presentAlert('Atención', 'Este correo electrónico aun no ha sido verificado! Revise la bandeja de entrada de su correo electrónico.')
+      this.presentAlert('Atención', 'Este correo electrónico aun no ha sido verificado o no esta registrado! Revise la bandeja de entrada de su correo electrónico.')
       this.afauth.signOut();
     }else if(userActivo==true){
       this.guardarToken(idtoken);
       this.estaAutenticado();
       loading.dismiss();
-      this.presentAlert('Bienvenido', abc)
-      if( data.user?.uid == 'GMKCSg38KnOgzcbW2aB52Tzb3bp1'){
-        this.router.navigateByUrl('/admin');   
-      }else{
-        this.router.navigateByUrl(`/ronda-semanal/${data.user?.uid}`);
-      }                       
+      this.general.getUsers().subscribe((resp: any)=>{
+        this.listaIdUser = resp["users"];              
+      })  
+      this.router.navigateByUrl(`/ronda-semanal/${data.user?.uid}`);
     }else{
       loading.dismiss();
       this.presentAlert('Atención', 'Estamos en proceso de verificación de los datos suministrados, pronto podrá acceder.')
@@ -113,22 +127,25 @@ export class AuthService {
 
   async signIn(email, password){
     let userActivo:boolean = false;
+    this.general.getUsers().subscribe((resp: any)=>{
+      this.listaIdUser = resp["users"];
+    })  
     this.afauth.setPersistence(firebase.default.auth.Auth.Persistence.LOCAL)
     .then(()=>{
       this.afauth.signInWithEmailAndPassword(email, password).then((data)=>{
-        //Valida el estado de los usuarios para permitirles participar en la ronda
-        this.getUser().then(resp=>{
-          for(let user of this.listaUser){
-            if(user.IdUsuario == data.user?.uid){
-              if(user.Estado == "Activo"){                
-                userActivo = true;
-              }else{
-                userActivo = false;
-              }
+        console.log(this.listaIdUser);
+        
+        //Valida el estado de los usuarios para permitirles participar en la ronda        
+        for(let user of this.listaIdUser){
+          if(user.idUsuario == data.user?.uid){
+            if(user.estado == true){                 
+              userActivo = true;
+            }else{
+              userActivo = false;
             }
           }
-          this.seguridad(data,userActivo);
-        })        
+        }
+        this.seguridad(data,userActivo);              
       })
       .catch(error=>{
         this.presentAlert('Error', 'Correo o contraseña incorrectos.')
@@ -140,12 +157,13 @@ export class AuthService {
   }// fin sign In
 
   async crear(dato: UserInterface){  
-    return await this.afauth.createUserWithEmailAndPassword(dato.Email,dato.Password).then(userCredential =>{
+    return await this.afauth.createUserWithEmailAndPassword(dato.email,dato.password).then(userCredential =>{
       this.uid = userCredential.user.uid;
-      userCredential.user?.sendEmailVerification();      
+      this.credenciales = userCredential.user;
       return this.uid;
-    }).catch(error=>{     
-      this.presentAlert('Atención', 'El correo electrónico ingresado ya esta registrado o tiene un formato incorrecto, utilice otro correo y vuelva a intentarlo.');
+    }).catch(error=>{  
+      this.presentAlert('Atención','El correo electrónico ingresado ya esta registrado, utilice otro correo y vuelva a intentarlo.');         
+      this.router.navigateByUrl('/inicio');
     })   
   }
 
@@ -167,25 +185,6 @@ export class AuthService {
     })
   }
 
-  async crearUser(datos: UserInterface ){
-    const userTemp1={
-      Nombre : datos.Nombre,
-      Apellido : datos.Apellido,
-      Celular: datos.Celular,
-      Granja: datos.Granja,
-      Email: datos.Email,
-      Localizacion : datos.Localizacion,
-      CodigoMostrar : datos.CodigoMostrar,
-      Estado: datos.Estado,
-      IdUsuario: datos.IdUsuario
-    }    
-    return await this.afs.collection('Usuarios').doc().set(userTemp1).then(resp=>{
-      this.presentAlert('Atención', 'Usuario creado exitosamente, para continuar revise la bandeja de entrada de su correo electrónico.');
-     }).catch(error=>{
-      this.presentAlert('Atención', 'Ha ocurrido un error, por favor vuelve a intentarlo más tarde.')
-    })
-  }
-
   recuperarContrasena(usuario: string){
     return this.afauth.sendPasswordResetEmail(usuario).then(resp=>{
       this.presentAlert('Atencion', 'Revise la bandeja de entrada de su correo electrónico para continuar.')
@@ -203,102 +202,7 @@ export class AuthService {
     .then(()=>{
       loading.dismiss();
       this.router.navigate(['/login']);
-      //console.log("Deberia volver a login");
     })
-  }
-
-  async setRonda(ronda: RondaInterface){
-    return await this.afs.collection('RondaHistorica').doc().set({
-            Producto : ronda.Producto,
-            Cantidad : ronda.Cantidad,
-            Peso: ronda.Peso,
-            Precio: ronda.Precio,
-            Comentario: ronda.Comentario,
-            Mercado: ronda.Mercado,
-            Entrega: ronda.Entrega,
-            Usuario: ronda.Usuario,
-            Fecha: ronda.Fecha,
-            Year: ronda.Year,
-            Semana: ronda.Semana,
-            UltimoDia: ronda.UltimoDia,            
-    }).then(resp=>{
-      this.presentAlert('Buen trabajo', 'Registro creado exitosamente!') 
-    })
-  }
-
-  setEstadoRonda(estado:string){
-    this.afs.collection('Estado').doc('1').set({Estado:estado, id:'1'});
-  }
-
-  async getUser(){        
-    return this.afs.collection('Usuarios').get().forEach((element) => {
-      this.listaUser.length=0;
-      this.listaOtra=(element.docs);
-      (element.docs).forEach((i:any)=>{        
-        this.listaUser.push(i.data());
-        this.listaIdUser.push(i.id);                             
-        return this.listaUser;
-      })       
-    })   
-  }
-
-  async getRondaHistorica(){
-    let anio:any=[];
-    let sem: any=[];   
-    this.listaRondaHistorica =[];    
-    return await this.afs.collection('RondaHistorica').get().forEach((element) => {
-      this.listaRondaHistorica.lenght = 0;
-      (element.docs).forEach((i:any)=>{        
-        this.listaRondaHistorica.push(i.data()); 
-        anio.push(i.data().Year);
-        sem.push(i.data().Semana);
-        this.years = Array.from(new Set(anio));
-        this.years.sort((a: any,b: any) =>a-b);
-        this.listaSemanas = Array.from(new Set(sem));
-        this.listaSemanas.sort((a: any,b: any) =>a-b);               
-        return this.listaRondaHistorica;
-      })       
-    })        
-  }
-
-  getLocalizacion(){    
-    this.listaMercados= [];    
-    return this.afs.collection('Mercados').get().forEach((element) => {
-      (element.docs).forEach((i:any)=>{
-        this.listaMercados.push(i.data().Nombre);
-        return this.listaMercados;
-      })       
-    })        
-  }
-
-  getProducto(){  
-    this.listaProducto = [];      
-    return this.afs.collection('Productos').get().forEach((element) => {
-      (element.docs).forEach((i:any)=>{
-        this.listaProducto.push(i.data());        
-        return this.listaProducto;
-      })       
-    })           
-  }
-
-  getEntrega(){  
-    this.listaEntrega = [];      
-    return this.afs.collection('Entrega').get().forEach((element) => {
-      (element.docs).forEach((i:any)=>{
-        this.listaEntrega.push(i.data());        
-        return this.listaEntrega;
-      })       
-    })           
-  }
-
-  getEstadoRonda(){
-    this.estadoRonda = [];
-    return this.afs.collection('Estado').get().forEach((element) => {
-      (element.docs).forEach((i:any)=>{      
-        this.estadoRonda=i.data().Estado;        
-        return this.estadoRonda;
-      })       
-    })  
   }
 
   async salidaForzada(){

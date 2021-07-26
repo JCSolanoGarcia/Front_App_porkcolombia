@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 import { RondaInterface } from 'src/app/interfaces/ronda-interface';
 import { UserInterface } from 'src/app/interfaces/user-interface';
 import { AuthService } from 'src/app/services/auth.service';
+import { GeneralService } from 'src/app/services/general.service';
 
 import { Storage } from '@ionic/storage';
 import { PushService } from 'src/app/services/push.service';
@@ -37,6 +38,8 @@ export class RondaSemanalPage implements OnInit {
   formRonda: any = FormGroup;
   opcionesEnviar =["Si", "No"];
   participo= false;
+  pushUserId: any;
+  estado: any;
 
   get producto(){    
     return this.formRonda.get('producto');
@@ -90,6 +93,8 @@ export class RondaSemanalPage implements OnInit {
 
   private _storage: Storage | null = null;
   constructor(
+    private loadingController: LoadingController,
+    private general: GeneralService,
     private auth: AuthService,
     private pushNoti: PushService,
     private router: Router,
@@ -104,7 +109,7 @@ export class RondaSemanalPage implements OnInit {
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
-    this.consultaEstado();            
+    this.consultaEstado();        
   } 
 
   async init() {
@@ -116,59 +121,68 @@ export class RondaSemanalPage implements OnInit {
     this._storage?.set(key, value);
   }
 
-  consultaEstado(){
-    this.auth.getEstadoRonda().then(()=>{
-      if(this.auth.estadoRonda == 'Inactivo'){
+  async consultaEstado(){
+    this.general.getEstados().subscribe((resp: any)=>{
+      this.estado = resp["estado"][0].Nombre;      
+      if(!this.estado){
         this.auth.presentAlert('Señor porcicultor', 'En este momento no esta permitido ingresar registros a la ronda, gracias.')
         this.auth.salidaForzada();
       }else{
         this.cargarDatos();
-      }       
-    })
+      }  
+    });
+  }
+
+  async capturaPushId(user: UserInterface){
+    this.pushUserId = await this.storage.get('userId') || user.pushUserId;
+    user.pushUserId = this.pushUserId
+    this.general.updateUser(user).subscribe((resp: any)=>{
+      console.log(resp);      
+    });
   }
 
   async cargarDatos(){
     this.numeroSemana = this.auth.numeroSemana;
-    //console.log(this.numeroSemana);
     
-    this.auth.getProducto().then(resp=>{
-      this.productoLista = this.auth.listaProducto;
-      /* console.log(this.productoLista);
-      console.log(this.productoLista[1].Minimo);
-            */
+    this.general.getProductos().subscribe((resp:any)=>{
+      this.productoLista = resp["producto"];
+    });
+
+    this.general.getMercados().subscribe((resp: any)=>{
+      this.mercadoLista = resp["mercados"];      
+    });           
+        
+    this.general.getRondas().subscribe(resp=>{
+      this.rondaLista = resp["rondas"];
     })
-    this.auth.getLocalizacion().then(resp=>{
-      this.mercadoLista = this.auth.listaMercados;     
-    })    
-    this.auth.getRondaHistorica().then(()=>{
-      this.rondaLista = this.auth.listaRondaHistorica;      
-    })    
-    this.auth.getUser().then(resp=>{
-      this.usuarioLista = this.auth.listaUser;
+                  
+    this.general.getUsers().subscribe(resp=>{
+      this.usuarioLista = resp["users"];
       let i = 0     
       for(let user of this.usuarioLista){         
-        if(this.id == user.IdUsuario){ 
+        if(this.id == user.idUsuario){ 
+          this.capturaPushId(user);          
           this.usuario = {
             ...user
           }
+
           for(let ronda of this.rondaLista){
-            if(ronda.Usuario == this.usuario.CodigoMostrar && ronda.Year == this.year && ronda.Semana == this.numeroSemana){
+            if(ronda.usuario == this.usuario.codigoMostrar && ronda.year == this.year && ronda.semana == this.numeroSemana){
               this.participo = true;              
             }
           }
-          this.idDocumentosUser = this.auth.listaIdUser[i];
-          this.storage.set('codigo', user.CodigoMostrar);
+          this.storage.set('codigo', user.codigoMostrar);
         }
         i++;
       }       
     })
-    await this.auth.getEntrega().then(resp=>{
-      this.entregaLista = this.auth.listaEntrega;
-      this.userParticipo();      
-    })        
+    this.general.getEntregas().subscribe((resp: any)=>{
+      this.entregaLista = resp["entrega"];            
+      this.userParticipo(); 
+    });         
     this.finSemana = this.auth.finSemana;    
     this.codigo = await this.storage.get('codigo') || [];
-    this.ronda.Usuario = this.codigo;   
+    this.ronda.usuario = this.codigo;   
   }
 
   userParticipo(){
@@ -215,40 +229,34 @@ export class RondaSemanalPage implements OnInit {
         }
       }
     }
-    /* if(this.formRonda.controls.producto.value == this.productoLista[0].Nombre){
-      if(this.formRonda.controls.precio.value >= this.productoLista[0].Minimo && this.formRonda.controls.precio.value <= this.productoLista[0].Maximo){
-        this.controlPrecio = false;
-      }else {
-        this.controlPrecio = true;
-        this.auth.presentAlert('Atención', 'El precio que esta registrando esta por fuera del rango establecido para el producto seleccionado.');
-        precioNo?.focus();
-        return;
-      }
-    } else if(this.formRonda.controls.producto.value != 'Cerdo en Pie' && this.formRonda.controls.producto.value != ''){
-      if(this.formRonda.controls.precio.value >= this.productoLista[1].Minimo && this.formRonda.controls.precio.value <= this.productoLista[1].Maximo){
-        this.controlPrecio = false;
-      }else{
-        this.controlPrecio = true;
-        this.auth.presentAlert('Atención', 'El precio que esta registrando esta por fuera del rango establecido para el producto seleccionado.');
-        precioNo?.focus();
-        return;
-      }
-    }   */
-    this.ronda.Fecha = this.fecha;
-    this.ronda.Semana = this.numeroSemana;
-    this.ronda.UltimoDia = this.finSemana;
-    this.ronda.Producto = this.formRonda.controls.producto.value;
-    this.ronda.Cantidad = parseInt(this.formRonda.controls.cantidad.value);
-    this.ronda.Precio = parseInt(this.formRonda.controls.precio.value);
-    this.ronda.Peso = this.formRonda.controls.peso.value;
-    this.ronda.Mercado = this.formRonda.controls.mercado.value;
-    this.ronda.Entrega = this.formRonda.controls.entrega.value;
-    this.ronda.Comentario = this.formRonda.controls.comentario.value;
+    this.ronda.fecha = this.fecha;
+    this.ronda.semana = this.numeroSemana;
+    this.ronda.ultimoDia = this.finSemana;
+    this.ronda.producto = this.formRonda.controls.producto.value;
+    this.ronda.cantidad = parseInt(this.formRonda.controls.cantidad.value);
+    this.ronda.precio = parseInt(this.formRonda.controls.precio.value);
+    this.ronda.peso = this.formRonda.controls.peso.value;
+    this.ronda.mercado = this.formRonda.controls.mercado.value;
+    this.ronda.entrega = this.formRonda.controls.entrega.value;
+    this.ronda.comentario = this.formRonda.controls.comentario.value;
     this.presentAlertConfirm();          
   }
 
-  async continuarRegistro(){    
-    await this.auth.setRonda(this.ronda).then(resp=>{              
+  async continuarRegistro(){ 
+    this.finSemana = this.auth.finSemana;    
+    this.codigo = await this.storage.get('codigo') || [];
+    this.ronda.usuario = this.codigo;
+    const loading = await this.loadingController.create({
+      message: `Registro en proceso....`,
+      spinner: `crescent`,
+      showBackdrop: true,
+    });
+    loading.present();
+    console.log(this.ronda);
+        
+    this.general.setRonda(this.ronda).subscribe((resp: any)=>{
+      console.log(resp);      
+      loading.dismiss();
       if(this.formRonda.controls.envia.value == 'Si'){
         this.formRonda.reset({
           producto:'',
@@ -265,7 +273,7 @@ export class RondaSemanalPage implements OnInit {
         });
         this.pushNoti.deleteCodigo();
         this.auth.logOut();
-      }                  
+      }   
     }) 
   }
 

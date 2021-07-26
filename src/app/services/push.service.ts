@@ -66,14 +66,13 @@ export class PushService {
     this.oneSignal.handleNotificationOpened().subscribe(async (noti) => {
       // do something when a notification is opened
       console.log('notificación abierta', noti);
-      await this.notificacionRecibida(noti.notification)
+      await this.notificacionRecibida(noti.notification);       
     });
+
     //codigo del suscriptor
-
     this.oneSignal.getIds().then(info=>{
-      this.userId= info.userId
+      this.userId= info.userId     
     })
-
     this.oneSignal.endInit();
   }
 
@@ -97,7 +96,8 @@ export class PushService {
   }
 
   guardarMensajes(){
-    this.storage.set('mensajes', this.mensajes);    
+    this.storage.set('mensajes', this.mensajes); 
+    this.storage.set('userId', this.userId); 
   }
 
   async cargarMensajes(){

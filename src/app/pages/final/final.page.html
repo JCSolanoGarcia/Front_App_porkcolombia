@@ -61,7 +61,7 @@
                                 <ion-label position="stacked">Seleccione una localización <a class="obligatorio">*</a></ion-label>
                                 <ion-select class="custom-options" 
                                             formControlName ="localizacion">
-                                            <ion-select-option *ngFor="let mercado of mercadoLista" value="{{mercado}}">{{mercado}}</ion-select-option>
+                                            <ion-select-option *ngFor="let mercado of mercadoLista" value="{{mercado.Nombre}}">{{mercado.Nombre}}</ion-select-option>
                                 </ion-select>
                             </ion-item>
                             <div *ngFor="let error of errorMensaje.localizacion">

@@ -14,7 +14,7 @@
                                 <ion-label position="stacked">Ubicación mercado <a class="obligatorio">*</a></ion-label>
                                 <ion-select class="custom-options" 
                                             formControlName ="mercado">
-                                    <ion-select-option *ngFor="let mercado of mercadoLista" value="{{mercado}}">{{mercado}}</ion-select-option>
+                                    <ion-select-option *ngFor="let mercado of mercadoLista" value="{{mercado.Nombre}}">{{mercado.Nombre}}</ion-select-option>
                                 </ion-select>
                               </ion-item>
                               <div *ngFor="let error of errorMensaje.mercado">
@@ -71,7 +71,7 @@
                               <ion-label position="stacked">Lugar de entrega <a class="obligatorio">*</a></ion-label>
                               <ion-select class="custom-options" 
                                           formControlName ="entrega">
-                                  <ion-select-option *ngFor="let entrega of entregaLista" value="{{entrega.Lugar}}">{{entrega.Lugar}}</ion-select-option>
+                                  <ion-select-option *ngFor="let entrega of entregaLista" value="{{entrega.Nombre}}">{{entrega.Nombre}}</ion-select-option>
                               </ion-select>
                             </ion-item>
                             <div *ngFor="let error of errorMensaje.entrega">

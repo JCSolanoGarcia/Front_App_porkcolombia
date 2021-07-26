@@ -1,14 +1,14 @@
 export class UserInterface {
-    Nombre: string ;
-    Apellido: string;
-    Celular: number;
-    Granja: string;
-    Localizacion: string;
-    Email: string;
-    Password: string;
+    nombre: string ;
+    apellido: string;
+    celular: number;
+    granja: string;
+    localizacion: string;
+    email: string;
+    password: string;
     id: any = '';
-    CodigoMostrar: string = '';
-    Estado= 'Inactivo';
-    IdUsuario: string = '';
-    Participa: boolean= false;
+    codigoMostrar: string = '';
+    estado: boolean = false;
+    idUsuario: string = '';
+    pushUserId: string = '';
 }
