@@ -7,10 +7,8 @@ import { AlertController, LoadingController, ToastController} from '@ionic/angul
 import { Observable, of } from 'rxjs';
 import { switchMap} from 'rxjs/operators';
 import { UserInterface } from '../interfaces/user-interface';
-import { RondaInterface } from '../interfaces/ronda-interface';
 import { Storage } from '@ionic/storage';
 import { GeneralService } from './general.service';
-
 
 declare global {
   interface Date {
@@ -26,18 +24,9 @@ export class AuthService {
   user: UserInterface;
   userToken: any; 
   listaIdUser : any=[];
-  listaMercados : any = [];
-  listaRangos : any = [];
-  listaProducto : any = [];
-  listaEntrega : any = [];
-  estadoRonda: any = [];
-  usuarioParticipa: any =[];
-  listaRondaHistorica: any=[];
   numeroSemana: any; 
   finSemana: any;
   years:any= [];
-  listaSemanas: any =[];
-  listaOtra: any = [];
   uid: any;
   usuario;
   credenciales: any;
@@ -73,8 +62,6 @@ export class AuthService {
     this._storage = storage;
   }
 
- // Create and expose methods that users of this service can
- // call, for example:
   public set(key: string, value: any) {
     this._storage?.set(key, value);
   }
@@ -107,6 +94,14 @@ export class AuthService {
     });
     loading.present();
     let idtoken:any = data.user?.refreshToken;
+
+    this.general.getUsers().subscribe((resp: any)=>{
+      this.listaIdUser = resp["users"];              
+    },err=>{
+      this.router.navigateByUrl('/inicio');
+      this.presentAlert('Error', 'No se ha podido conectar con el servidor.'); 
+    });
+
     if(!data.user.emailVerified){
       loading.dismiss();
       this.presentAlert('Atención', 'Este correo electrónico aun no ha sido verificado o no esta registrado! Revise la bandeja de entrada de su correo electrónico.')
@@ -115,9 +110,6 @@ export class AuthService {
       this.guardarToken(idtoken);
       this.estaAutenticado();
       loading.dismiss();
-      this.general.getUsers().subscribe((resp: any)=>{
-        this.listaIdUser = resp["users"];              
-      })  
       this.router.navigateByUrl(`/ronda-semanal/${data.user?.uid}`);
     }else{
       loading.dismiss();
@@ -127,25 +119,28 @@ export class AuthService {
 
   async signIn(email, password){
     let userActivo:boolean = false;
-    this.general.getUsers().subscribe((resp: any)=>{
-      this.listaIdUser = resp["users"];
-    })  
     this.afauth.setPersistence(firebase.default.auth.Auth.Persistence.LOCAL)
     .then(()=>{
       this.afauth.signInWithEmailAndPassword(email, password).then((data)=>{
-        console.log(this.listaIdUser);
         
-        //Valida el estado de los usuarios para permitirles participar en la ronda        
-        for(let user of this.listaIdUser){
-          if(user.idUsuario == data.user?.uid){
-            if(user.estado == true){                 
-              userActivo = true;
-            }else{
-              userActivo = false;
+          //Valida el estado de los usuarios para permitirles participar en la ronda
+          this.general.getUsers().subscribe((resp: any)=>{
+            this.listaIdUser = resp["users"];
+            for(let user of this.listaIdUser){
+              if(user.idUsuario == data.user?.uid){
+                if(user.estado == true){                 
+                  userActivo = true;
+                }else{
+                  userActivo = false;
+                }
+              }
             }
-          }
-        }
-        this.seguridad(data,userActivo);              
+            this.seguridad(data,userActivo);
+          },err=>{
+            this.router.navigateByUrl('/inicio');
+            this.presentAlert('Error', 'No se ha podido conectar con el servidor.');
+            return; 
+          });                        
       })
       .catch(error=>{
         this.presentAlert('Error', 'Correo o contraseña incorrectos.')

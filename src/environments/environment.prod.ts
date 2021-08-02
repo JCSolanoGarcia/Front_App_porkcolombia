@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  url: 'http://192.168.43.81:3000',
+  url: 'http://192.168.1.52:3500',
   firebaseConfig : {
     apiKey: "AIzaSyC-TiU362H9O61s6Dd59l97vhE15-Q6aOw",
     authDomain: "ronda-semanal.firebaseapp.com",

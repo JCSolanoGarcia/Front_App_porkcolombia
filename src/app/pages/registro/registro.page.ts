@@ -20,11 +20,9 @@ export class RegistroPage implements OnInit {
   acepto: any;
 
   get email(){
-    //this.mail = this.formRegistro.get('email').value;
     return this.formRegistro.get('email');
   }
   get password(){
-    //this.senal = this.formRegistro.get('password').value;
     return this.formRegistro.get('password');
   }
   
@@ -68,7 +66,7 @@ export class RegistroPage implements OnInit {
     }     
 
   crearUser(){   
-    this.auth.crear(this.usuario).then(resp=>{         
+    this.auth.crear(this.usuario).then((resp: any)=>{               
       if(resp.message === "The email address is already in use by another account."){    
         this.formRegistro.reset();
         this.auth.presentAlert('Atención', 'El correo electrónico ingresado ya esta registrado o tiene un formato incorrecto, utilice un correo valido y vuelva a intentarlo.');

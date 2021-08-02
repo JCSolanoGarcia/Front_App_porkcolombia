@@ -4,7 +4,6 @@ import { OneSignal, OSNotification, OSNotificationPayload } from '@ionic-native/
 import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
 
-
 @Injectable({
   providedIn: 'root'
 })

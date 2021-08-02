@@ -48,8 +48,5 @@ export class InicioPage implements OnInit {
 
   salir(){
     navigator["app"].exitApp();
-    /* if(window.confirm("Esta seguro de salir de la aplicación")){
-      navigator["app"].exitApp();
-    }       */
   }
 }

@@ -24,16 +24,13 @@ export class RondaSemanalPage implements OnInit {
   mercadoLista: any[]=[];
   entregaLista: any[]=[];
   rondaLista: any[]=[];
-  idDocumentosUser: any;
+  controlPrecio: boolean = false;
   decision: any;
   numeroSemana: any;
   finSemana: any;
   fecha = new Date().toLocaleString();
   year = new Date().getFullYear();
   codigo: any;
-  controlCantidad: boolean = false;
-  controlPeso: boolean = false;
-  controlPrecio : boolean = false;
   id: any;
   formRonda: any = FormGroup;
   opcionesEnviar =["Si", "No"];
@@ -181,7 +178,7 @@ export class RondaSemanalPage implements OnInit {
       this.userParticipo(); 
     });         
     this.finSemana = this.auth.finSemana;    
-    this.codigo = await this.storage.get('codigo') || [];
+    this.codigo = await this.storage.get('codigo') || '';
     this.ronda.usuario = this.codigo;   
   }
 
@@ -251,11 +248,8 @@ export class RondaSemanalPage implements OnInit {
       spinner: `crescent`,
       showBackdrop: true,
     });
-    loading.present();
-    console.log(this.ronda);
-        
-    this.general.setRonda(this.ronda).subscribe((resp: any)=>{
-      console.log(resp);      
+    loading.present();        
+    this.general.setRonda(this.ronda).subscribe((resp: any)=>{  
       loading.dismiss();
       if(this.formRonda.controls.envia.value == 'Si'){
         this.formRonda.reset({

@@ -73,21 +73,29 @@ export class FinalPage implements OnInit {
   ) {
     this.crearFormulario();
     this.general.getMercados().subscribe((resp: any)=>{
-      this.mercadoLista = resp["mercados"];        
-    })
+      this.mercadoLista = resp["mercados"];         
+    },error => {
+      this.auth.eliminarUser(this.email, this.pass).then(resp=>{
+        this.auth.presentAlert('Error', 'No se ha podido conectar con el servidor.');     
+      });
+    });
+    
     this.general.getUsers().subscribe(resp=>{
       this.usuarioLista = resp["users"];        
-    }) 
-    
+    },error => {
+      this.auth.eliminarUser(this.email, this.pass).then(resp=>{
+        this.auth.presentAlert('Error', 'No se ha podido conectar con el servidor.');     
+      });
+    });       
   }
 
   ngOnInit() {
     this.pass = this.route.snapshot.paramMap.get('id');
     this.uid = this.route.snapshot.paramMap.get('num');
-    this.email =  this.route.snapshot.paramMap.get('str')    
+    this.email =  this.route.snapshot.paramMap.get('str');    
   }
 
-  crearFormulario(){
+  crearFormulario(){  
     this.formRegistro = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       apellido: ['',[Validators.required, Validators.minLength(2)]],
@@ -143,7 +151,6 @@ export class FinalPage implements OnInit {
     }
     this.usuario.codigoMostrar = codigoAlmacenado; 
     this.general.setUser(this.usuario).subscribe(resp=>{
-      console.log(resp);
       this.formRegistro.reset({
         localizacion: '',
       })      

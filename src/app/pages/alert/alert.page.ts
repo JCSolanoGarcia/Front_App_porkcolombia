@@ -14,20 +14,16 @@ export class AlertPage implements OnInit {
   constructor(
     public pushService: PushService,
     private alertCtrl: AlertController
-    //private applicationRef: ApplicationRef
   ) { }
 
   ngOnInit() {
     this.pushService.pushListener.subscribe(noti =>{
       this.mensajes.unshift(noti);
-      //this.applicationRef.tick();
     })
   }
 
-  async ionViewWillEnter(){
-       
+  async ionViewWillEnter(){       
     this.mensajes = await this.pushService.getMensajes();
-    //console.log('cargando mensajes de will',this.mensajes); 
   }
 
   async borrarMensaje(){
@@ -46,13 +42,11 @@ export class AlertPage implements OnInit {
           role: 'cancel',
           cssClass: 'secondary',
           handler: (blah) => {
-            //console.log('Confirm Cancel: blah');
             return;
           }
         }, {
           text: 'Ok',
           handler: () => {
-            //console.log('Confirm Okay');
             this.borrarMensaje();
           }
         }

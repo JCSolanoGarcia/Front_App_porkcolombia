@@ -28,25 +28,23 @@ export class GeneralService {
   getRondas(){    
     return this.http.get(`${URL}/ronda/`);
   }
-  setRonda(ronda: RondaInterface){
-    console.log("hola", );
-    
+  setRonda(ronda: RondaInterface){    
     return this.http.post(`${URL}/ronda/create`, ronda);
   }
 
   getMercados(){
-    return this.http.get(`${URL}/mercado`);
+    return this.http.get(`${URL}/mercado/`);
   }
 
   getProductos(){
-    return this.http.get(`${URL}/producto`);
+    return this.http.get(`${URL}/producto/`);
   }
 
   getEntregas(){
-    return this.http.get(`${URL}/entrega`);
+    return this.http.get(`${URL}/entrega/`);
   }
 
   getEstados(){
-    return this.http.get(`${URL}/estado`);
+    return this.http.get(`${URL}/estado/`);
   }
 }
